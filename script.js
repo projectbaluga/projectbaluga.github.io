@@ -254,7 +254,7 @@
   if (rotator && !prefersReduced) {
     const roles = [
       "Developer",
-      "Working on FairLink",
+      "Building practical software",
       "Full-stack & network tooling",
     ];
     let roleIndex = 0;
