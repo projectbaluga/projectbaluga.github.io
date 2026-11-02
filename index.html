@@ -181,7 +181,7 @@
         </p>
 
         <p class="hero__lead">
-          I build practical software across web, desktop, networking, and embedded Linux. My work ranges from ISP and business platforms to offline-first Windows apps, MikroTik tools, and a custom Raspberry Pi operating system. This portfolio highlights selected public projects alongside private work that is not published here.
+          I build practical software across web, desktop, networking, and connected systems. I enjoy turning complex requirements into reliable tools that simplify workflows, connect infrastructure, and help people get things done.
         </p>
 
         <div class="hero__cta">
@@ -198,7 +198,7 @@
         </div>
 
         <ul class="hero__stats">
-          <li><span class="stat__num" data-count="7">7</span><span class="stat__label">Projects showcased</span></li>
+          <li><span class="stat__num" data-count="6">6</span><span class="stat__label">Areas of focus</span></li>
           <li><span class="stat__num" data-count="15" data-suffix="+">15+</span><span class="stat__label">Technologies</span></li>
           <li><span class="stat__num" data-count="6">6</span><span class="stat__label">Docker services</span></li>
         </ul>
@@ -382,411 +382,83 @@
         <header class="section-head">
           <div class="section-head__meta">
             <span class="section-head__num">(03)</span>
-            <span class="section-head__label">Selected work</span>
+            <span class="section-head__label">Areas of focus</span>
           </div>
-          <h2 class="section-head__title">Things I've <em class="serif">shipped</em></h2>
+          <h2 class="section-head__title">Building across <em class="serif">systems</em></h2>
         </header>
 
-        <!-- FairLink -->
-        <article class="case" id="fairlink">
-          <header class="case__head">
-            <div class="case__head-text">
-              <span class="case__eyebrow">Case 01 — Main project · Full-stack platform</span>
-              <h3 class="case__title">FairLink</h3>
-              <p class="case__tagline">ISP &amp; Hotspot Management System</p>
-            </div>
-            <span class="repo-badge" title="The source code lives in a private repository — happy to walk through it on request.">
-              <svg class="icon" aria-hidden="true"><use href="#i-lock"/></svg>
-              Private repo · walkthrough on request
-            </span>
-          </header>
+        <p class="case__overview">
+          I enjoy building practical software that solves real-world problems. My work spans business applications, network infrastructure, desktop software, automation, and connected devices — with an emphasis on making complex systems reliable, useful, and easier to manage.
+        </p>
 
-          <p class="case__overview">
-            At its core, FairLink is an <strong>ISP &amp; hotspot management
-            system</strong> on the MERN stack and Docker — subscriber billing, a
-            CRM with real-time support chat and ticketing, and MikroTik
-            (PPPoE/IPoE) + FreeRADIUS network control. On top of that I built a
-            comprehensive <strong>internet-café / workstation add-on</strong> —
-            coin-operated PC sessions, a canteen point-of-sale, and a
-            print-to-cashier queue — so the whole business runs from one platform,
-            with companion apps for Android, iOS, and Windows.
-          </p>
+        <div class="case__grid">
+          <article class="feature spot" data-spot>
+            <div class="feature__icon"><svg class="icon" aria-hidden="true"><use href="#i-dashboard"/></svg></div>
+            <h4>Business &amp; Operations Software</h4>
+            <p>Applications that streamline everyday operations, from customer and account management to billing, reporting, inventory, and workflow automation.</p>
+          </article>
 
-          <ul class="metrics">
-            <li><span class="metrics__num" data-count="6">6</span><span class="metrics__label">Docker services</span></li>
-            <li><span class="metrics__num" data-count="32">32</span><span class="metrics__label">Data models</span></li>
-            <li><span class="metrics__num" data-count="64">64</span><span class="metrics__label">UI components</span></li>
-            <li><span class="metrics__num" data-count="39">39</span><span class="metrics__label">Backend tests</span></li>
-            <li><span class="metrics__num" data-count="11">11</span><span class="metrics__label">Dashboard modules</span></li>
-          </ul>
+          <article class="feature spot" data-spot>
+            <div class="feature__icon"><svg class="icon" aria-hidden="true"><use href="#i-router"/></svg></div>
+            <h4>Networking &amp; Infrastructure</h4>
+            <p>Network services and management tools involving ISP operations, MikroTik, hotspot access, authentication, remote connectivity, and managed environments.</p>
+          </article>
 
-          <!-- Screenshot carousel -->
-          <div class="carousel" data-carousel>
-            <button class="carousel__arrow carousel__arrow--prev" data-prev aria-label="Previous screenshot">
-              <svg class="icon" aria-hidden="true"><use href="#i-arrow-right" transform="rotate(180 12 12)"/></svg>
-            </button>
-            <div class="carousel__viewport">
-              <div class="carousel__track" data-track>
-                <figure class="slide">
-                  <button class="shot__frame" data-zoom aria-label="View fullscreen">
-                    <span class="shot__bar">
-                      <span class="shot__dots"><i></i><i></i><i></i></span>
-                      <span class="shot__url">fairlink.local/dashboard</span>
-                      <svg class="icon shot__zoom" aria-hidden="true"><use href="#i-expand"/></svg>
-                    </span>
-                    <img src="assets/fairlink-dashboard.jpg" alt="FairLink admin dashboard — system status, billing stat cards and subscriber list" width="1500" height="938" loading="lazy" />
-                  </button>
-                  <figcaption>Admin Dashboard — billing CRM &amp; live system monitoring</figcaption>
-                </figure>
-                <figure class="slide">
-                  <button class="shot__frame" data-zoom aria-label="View fullscreen">
-                    <span class="shot__bar">
-                      <span class="shot__dots"><i></i><i></i><i></i></span>
-                      <span class="shot__url">fairlink.local/reports</span>
-                      <svg class="icon shot__zoom" aria-hidden="true"><use href="#i-expand"/></svg>
-                    </span>
-                    <img src="assets/fairlink-reports.jpg" alt="FairLink Intelligence Hub — business reports and analytics" width="1300" height="812" loading="lazy" />
-                  </button>
-                  <figcaption>Intelligence Hub — revenue &amp; collection analytics</figcaption>
-                </figure>
-                <figure class="slide">
-                  <button class="shot__frame" data-zoom aria-label="View fullscreen">
-                    <span class="shot__bar">
-                      <span class="shot__dots"><i></i><i></i><i></i></span>
-                      <span class="shot__url">fairlink.local/workstations</span>
-                      <svg class="icon shot__zoom" aria-hidden="true"><use href="#i-expand"/></svg>
-                    </span>
-                    <img src="assets/fairlink-workstations.jpg" alt="FairLink workstation management — live PC monitoring by zone" width="1300" height="812" loading="lazy" />
-                  </button>
-                  <figcaption>Workstation Manager — real-time PC control by zone</figcaption>
-                </figure>
-                <figure class="slide">
-                  <button class="shot__frame" data-zoom aria-label="View fullscreen">
-                    <span class="shot__bar">
-                      <span class="shot__dots"><i></i><i></i><i></i></span>
-                      <span class="shot__url">fairlink.local/radius</span>
-                      <svg class="icon shot__zoom" aria-hidden="true"><use href="#i-expand"/></svg>
-                    </span>
-                    <img src="assets/fairlink-hotspot.jpg" alt="FairLink RADIUS management — hotspot profiles and auth server status" width="1300" height="812" loading="lazy" />
-                  </button>
-                  <figcaption>RADIUS / Hotspot — auth server &amp; voucher plans</figcaption>
-                </figure>
-                <figure class="slide">
-                  <button class="shot__frame" data-zoom aria-label="View fullscreen">
-                    <span class="shot__bar">
-                      <span class="shot__dots"><i></i><i></i><i></i></span>
-                      <span class="shot__url">fairlink.local/inventory</span>
-                      <svg class="icon shot__zoom" aria-hidden="true"><use href="#i-expand"/></svg>
-                    </span>
-                    <img src="assets/fairlink-inventory.jpg" alt="FairLink inventory management — SKU and stock control" width="1300" height="812" loading="lazy" />
-                  </button>
-                  <figcaption>Inventory Management — SKU &amp; stock control</figcaption>
-                </figure>
-                <figure class="slide">
-                  <button class="shot__frame" data-zoom aria-label="View fullscreen">
-                    <span class="shot__bar">
-                      <span class="shot__dots"><i></i><i></i><i></i></span>
-                      <span class="shot__url">fairlink.local/vpn</span>
-                      <svg class="icon shot__zoom" aria-hidden="true"><use href="#i-expand"/></svg>
-                    </span>
-                    <img src="assets/fairlink-vpn.jpg" alt="FairLink WireGuard VPN management — server status and clients" width="1300" height="812" loading="lazy" />
-                  </button>
-                  <figcaption>WireGuard VPN — remote router access dashboard</figcaption>
-                </figure>
-                <figure class="slide">
-                  <button class="shot__frame" data-zoom aria-label="View fullscreen">
-                    <span class="shot__bar">
-                      <span class="shot__dots"><i></i><i></i><i></i></span>
-                      <span class="shot__url">fairlink.local</span>
-                      <svg class="icon shot__zoom" aria-hidden="true"><use href="#i-expand"/></svg>
-                    </span>
-                    <img src="assets/fairlink-landing.jpg" alt="FairLink public ISP portal — billing lookup and internet plans" width="1500" height="988" loading="lazy" />
-                  </button>
-                  <figcaption>Public ISP Portal — instant billing lookup &amp; plans</figcaption>
-                </figure>
-                <figure class="slide">
-                  <button class="shot__frame" data-zoom aria-label="View fullscreen">
-                    <span class="shot__bar">
-                      <span class="shot__dots"><i></i><i></i><i></i></span>
-                      <span class="shot__url">hotspot.fairlink.local/login</span>
-                      <svg class="icon shot__zoom" aria-hidden="true"><use href="#i-expand"/></svg>
-                    </span>
-                    <img src="assets/fairlink-portal.jpg" alt="FairLink hotspot captive portal — voucher and member login" width="1100" height="725" loading="lazy" />
-                  </button>
-                  <figcaption>Hotspot Captive Portal — voucher &amp; member login</figcaption>
-                </figure>
-                <figure class="slide">
-                  <button class="shot__frame" data-zoom aria-label="View fullscreen">
-                    <span class="shot__bar">
-                      <span class="shot__dots"><i></i><i></i><i></i></span>
-                      <span class="shot__url">kiosk.fairlink.local/lockscreen</span>
-                      <svg class="icon shot__zoom" aria-hidden="true"><use href="#i-expand"/></svg>
-                    </span>
-                    <img src="assets/fairlink-lockscreen.jpg" alt="FairLink gaming kiosk lockscreen — session login with top-up options" width="1300" height="857" loading="lazy" />
-                  </button>
-                  <figcaption>Gaming Kiosk Lockscreen — coin-operated sessions</figcaption>
-                </figure>
+          <article class="feature spot" data-spot>
+            <div class="feature__icon"><svg class="icon" aria-hidden="true"><use href="#i-monitor"/></svg></div>
+            <h4>Desktop &amp; Productivity Apps</h4>
+            <p>Purpose-built desktop applications for business workflows, data management, productivity, and systems that connect software with day-to-day operations.</p>
+          </article>
+
+          <article class="feature spot" data-spot>
+            <div class="feature__icon"><svg class="icon" aria-hidden="true"><use href="#i-cpu"/></svg></div>
+            <h4>Embedded &amp; Linux Systems</h4>
+            <p>Exploring lightweight Linux environments, single-board computers, hardware integration, system services, and purpose-built computing solutions.</p>
+          </article>
+
+          <article class="feature spot" data-spot>
+            <div class="feature__icon"><svg class="icon" aria-hidden="true"><use href="#i-shield"/></svg></div>
+            <h4>Automation &amp; System Reliability</h4>
+            <p>Integrations, background services, monitoring, access controls, and automation that help software and infrastructure operate consistently.</p>
+          </article>
+
+          <article class="feature spot" data-spot>
+            <div class="feature__icon"><svg class="icon" aria-hidden="true"><use href="#i-gamepad"/></svg></div>
+            <h4>Community &amp; Game Development</h4>
+            <p>Custom server-side features, administration tools, and gameplay systems designed to support engaging and sustainable online communities.</p>
+          </article>
+        </div>
+
+        <div class="case__detail">
+          <div class="case__detail-text">
+            <h4 class="case__detail-title">A practical approach to building</h4>
+            <div class="case__detail-grid">
+              <div>
+                <h5><svg class="icon" aria-hidden="true"><use href="#i-target"/></svg> Understand the problem</h5>
+                <p>Start with the people, workflow, and constraints before choosing a technical solution.</p>
               </div>
-            </div>
-            <button class="carousel__arrow carousel__arrow--next" data-next aria-label="Next screenshot">
-              <svg class="icon" aria-hidden="true"><use href="#i-arrow-right"/></svg>
-            </button>
-            <div class="carousel__footer">
-              <div class="carousel__dots" data-dots></div>
-              <span class="carousel__counter" data-counter>1 / 9</span>
-            </div>
-          </div>
-
-          <h4 class="case__group"><span class="case__group-tag">Core</span> ISP platform</h4>
-          <div class="case__grid">
-            <div class="feature spot" data-spot>
-              <div class="feature__icon"><svg class="icon" aria-hidden="true"><use href="#i-credit-card"/></svg></div>
-              <h4>Billing &amp; Cycles</h4>
-              <p>Anniversary billing with a full cycle-change history, opt-in month-end anchor mode, pro-rated rebates for downtime, partial payments, and PDF statements of account.</p>
-            </div>
-            <div class="feature spot" data-spot>
-              <div class="feature__icon"><svg class="icon" aria-hidden="true"><use href="#i-dashboard"/></svg></div>
-              <h4>Dashboard &amp; CRM</h4>
-              <p>Subscriber lifecycle, financial analytics, issue tracking, and a live Leaflet map of field staff.</p>
-            </div>
-            <div class="feature spot" data-spot>
-              <div class="feature__icon"><svg class="icon" aria-hidden="true"><use href="#i-message"/></svg></div>
-              <h4>Live Chat</h4>
-              <p>Real-time messaging over Socket.io — subscribers chat with support, conversations thread onto tickets, and field technicians coordinate with the office, synced across the dashboard and companion apps.</p>
-            </div>
-            <div class="feature spot" data-spot>
-              <div class="feature__icon"><svg class="icon" aria-hidden="true"><use href="#i-wifi"/></svg></div>
-              <h4>Hotspot &amp; Vouchers</h4>
-              <p>FreeRADIUS auth delegated to the API, a captive portal, bulk voucher generation, live sessions, and CoA / disconnect.</p>
-            </div>
-            <div class="feature spot" data-spot>
-              <div class="feature__icon"><svg class="icon" aria-hidden="true"><use href="#i-router"/></svg></div>
-              <h4>Router Control</h4>
-              <p>MikroTik API for PPPoE secrets and IPoE (DHCP lease, simple queue, IP binding), with encrypted credentials and health checks.</p>
-            </div>
-            <div class="feature spot" data-spot>
-              <div class="feature__icon"><svg class="icon" aria-hidden="true"><use href="#i-ticket"/></svg></div>
-              <h4>Support &amp; Tickets</h4>
-              <p>Ticket workflow with comments, assignment, and resolution tracking, with live status updates over Socket.io and linked field-technician reports.</p>
-            </div>
-            <div class="feature spot" data-spot>
-              <div class="feature__icon"><svg class="icon" aria-hidden="true"><use href="#i-package"/></svg></div>
-              <h4>Inventory &amp; Deployments</h4>
-              <p>Barcode / serial stock tracking with audit history, equipment deployments to subscribers, and a technician stock-request workflow.</p>
-            </div>
-            <div class="feature spot" data-spot>
-              <div class="feature__icon"><svg class="icon" aria-hidden="true"><use href="#i-map-pin"/></svg></div>
-              <h4>Field Ops &amp; SOS</h4>
-              <p>Live staff GPS tracking on a Leaflet map, subscriber SOS mode with grace windows, and real-time online presence.</p>
-            </div>
-            <div class="feature spot" data-spot>
-              <div class="feature__icon"><svg class="icon" aria-hidden="true"><use href="#i-smartphone"/></svg></div>
-              <h4>Companion Apps</h4>
-              <p>Native Android (Java) and iOS (Swift) WebView wrappers around the dashboard, with GPS, camera, and file-upload bridges.</p>
-            </div>
-            <div class="feature spot" data-spot>
-              <div class="feature__icon"><svg class="icon" aria-hidden="true"><use href="#i-shield"/></svg></div>
-              <h4>Security</h4>
-              <p>JWT auth, role-based permissions, field-level encryption at rest, CSRF tokens, and rate-limited login.</p>
-            </div>
-          </div>
-
-          <h4 class="case__group"><span class="case__group-tag case__group-tag--addon">Add-on</span> Café / workstation</h4>
-          <div class="case__grid">
-            <div class="feature spot" data-spot>
-              <div class="feature__icon"><svg class="icon" aria-hidden="true"><use href="#i-gamepad"/></svg></div>
-              <h4>Coin-Op Sessions</h4>
-              <p>Minute-based desktop accounts and sessions with a per-minute timer, ESP8266 coin-acceptor top-ups, thermal-printed vouchers, and a Windows .NET / WPF lockscreen that locks each PC.</p>
-            </div>
-            <div class="feature spot" data-spot>
-              <div class="feature__icon"><svg class="icon" aria-hidden="true"><use href="#i-credit-card"/></svg></div>
-              <h4>Canteen POS</h4>
-              <p>An Order-based point-of-sale wired to inventory stock movements, served to both staff and the self-service kiosk.</p>
-            </div>
-            <div class="feature spot" data-spot>
-              <div class="feature__icon"><svg class="icon" aria-hidden="true"><use href="#i-file-check"/></svg></div>
-              <h4>Print to Cashier</h4>
-              <p>Kiosk Ctrl+P jobs land straight in the cashier's print queue — preview, print, then mark collected, with per-page rates.</p>
-            </div>
-            <div class="feature spot" data-spot>
-              <div class="feature__icon"><svg class="icon" aria-hidden="true"><use href="#i-sparkle"/></svg></div>
-              <h4>Rewards &amp; Leaderboard</h4>
-              <p>A weekly café leaderboard with automated rewards and referral bonuses to keep regulars coming back.</p>
-            </div>
-          </div>
-
-          <!-- Under the hood -->
-          <div class="case__detail">
-            <div class="case__detail-text">
-              <h4 class="case__detail-title">How it works</h4>
-              <div class="case__detail-grid">
-                <div>
-                  <h5><svg class="icon" aria-hidden="true"><use href="#i-server"/></svg> Architecture</h5>
-                  <p>Six Docker services on an isolated bridge network — a React/Nginx frontend, a localhost-bound Express API, MongoDB, FreeRADIUS, a WireGuard VPN, and a read-only Docker socket proxy.</p>
-                </div>
-                <div>
-                  <h5><svg class="icon" aria-hidden="true"><use href="#i-zap"/></svg> Real-time</h5>
-                  <p>Socket.io keeps live chat, technician GPS, ticket activity, kiosk sessions, and SOS status in sync across every device.</p>
-                </div>
-                <div>
-                  <h5><svg class="icon" aria-hidden="true"><use href="#i-refresh"/></svg> Automation</h5>
-                  <p>Cron jobs handle the daily billing accrual, overdue-subscriber syncing to MikroTik, payment deadlines, per-minute kiosk timers, and weekly café rewards.</p>
-                </div>
-                <div>
-                  <h5><svg class="icon" aria-hidden="true"><use href="#i-network"/></svg> Networking</h5>
-                  <p>Talks to MikroTik over its API for both PPPoE and IPoE, delegates RADIUS auth and accounting to the backend, and reaches routers behind CGNAT through the built-in WireGuard VPN.</p>
-                </div>
+              <div>
+                <h5><svg class="icon" aria-hidden="true"><use href="#i-layers"/></svg> Connect the pieces</h5>
+                <p>Bring applications, devices, networks, and services together into a cohesive experience.</p>
               </div>
-            </div>
-
-            <div class="tty" aria-label="FairLink Docker services">
-              <div class="tty__bar">
-                <span class="shot__dots"><i></i><i></i><i></i></span>
-                <span class="tty__title">fairlink — services</span>
+              <div>
+                <h5><svg class="icon" aria-hidden="true"><use href="#i-refresh"/></svg> Improve continuously</h5>
+                <p>Build, test, learn from actual use, and refine the details that make systems dependable.</p>
               </div>
-              <div class="tty__body">
-                <p class="tty__cmd"><span>$</span> docker compose ps</p>
-                <div class="tty__table">
-                  <div class="tty__row tty__row--head"><span>NAME</span><span>SERVICE</span><span>STATUS</span></div>
-                  <div class="tty__row"><span>fairlink-web</span><span>react-spa</span><span><i class="up"></i>up</span></div>
-                  <div class="tty__row"><span>fairlink-api</span><span>express-api</span><span><i class="up"></i>up</span></div>
-                  <div class="tty__row"><span>fairlink-db</span><span>mongodb</span><span><i class="up"></i>up</span></div>
-                  <div class="tty__row"><span>fairlink-radius</span><span>freeradius</span><span><i class="up"></i>up</span></div>
-                  <div class="tty__row"><span>fairlink-vpn</span><span>wireguard</span><span><i class="up"></i>up</span></div>
-                  <div class="tty__row"><span>fairlink-proxy</span><span>socket-proxy</span><span><i class="up"></i>up</span></div>
-                </div>
+              <div>
+                <h5><svg class="icon" aria-hidden="true"><use href="#i-users"/></svg> Keep it usable</h5>
+                <p>Prioritize maintainability and clear experiences that make everyday work easier.</p>
               </div>
             </div>
           </div>
+        </div>
 
-          <ul class="tags">
-            <li>React 18</li><li>Vite</li><li>Tailwind CSS</li><li>Node.js</li><li>Express</li>
-            <li>MongoDB</li><li>Mongoose</li><li>Socket.io</li><li>Nginx</li><li>Docker</li>
-            <li>FreeRADIUS</li><li>WireGuard</li><li>MikroTik API</li><li>JWT</li><li>.NET / WPF</li>
-            <li>ESP8266</li><li>Android</li><li>iOS</li>
-          </ul>
-        </article>
-
-        <!-- SafePlay -->
-        <article class="case case--compact" id="safeplay">
-          <header class="case__head">
-            <div class="case__head-text">
-              <span class="case__eyebrow">Case 02 — Side project · Systems &amp; security</span>
-              <h3 class="case__title">SafePlay</h3>
-              <p class="case__tagline">Anti-Cheat Tool for Online Games</p>
-            </div>
-            <a href="https://github.com/projectbaluga/safeplay" target="_blank" rel="noopener" class="btn btn--ghost btn--sm" data-magnetic>
-              <svg class="icon icon--fill" aria-hidden="true"><use href="#i-github"/></svg>
-              GitHub
-              <svg class="icon" aria-hidden="true"><use href="#i-arrow-up-right"/></svg>
-            </a>
-          </header>
-
-          <p class="case__overview">
-            A side project exploring how anti-cheat tools work. It's a
-            <strong>Windows DLL</strong> for Ragnarok Online clients that serves
-            a trusted configuration from memory, verifies game files, and checks
-            for known cheat tools — paired with a launcher that makes sure the
-            game starts clean. Written in C++.
-          </p>
-
-          <div class="case__grid case__grid--compact">
-            <div class="feature spot" data-spot>
-              <div class="feature__icon"><svg class="icon" aria-hidden="true"><use href="#i-lock"/></svg></div>
-              <h4>Configuration</h4>
-              <p>Keeps game server settings stored safely in the DLL so they can't be easily changed.</p>
-            </div>
-            <div class="feature spot" data-spot>
-              <div class="feature__icon"><svg class="icon" aria-hidden="true"><use href="#i-file-check"/></svg></div>
-              <h4>File Check</h4>
-              <p>Verifies game files haven't been tampered with before allowing the game to start.</p>
-            </div>
-            <div class="feature spot" data-spot>
-              <div class="feature__icon"><svg class="icon" aria-hidden="true"><use href="#i-file-lock"/></svg></div>
-              <h4>File Patching</h4>
-              <p>Intercepts file access attempts to protect configuration from being modified.</p>
-            </div>
-            <div class="feature spot" data-spot>
-              <div class="feature__icon"><svg class="icon" aria-hidden="true"><use href="#i-crosshair"/></svg></div>
-              <h4>Cheat Detection</h4>
-              <p>Regularly checks for known cheat tools running in the background.</p>
-            </div>
-            <div class="feature spot" data-spot>
-              <div class="feature__icon"><svg class="icon" aria-hidden="true"><use href="#i-rocket"/></svg></div>
-              <h4>Protected Launch</h4>
-              <p>Game only runs through a special launcher to ensure protections are in place.</p>
-            </div>
-            <div class="feature spot" data-spot>
-              <div class="feature__icon"><svg class="icon" aria-hidden="true"><use href="#i-bell"/></svg></div>
-              <h4>Notifications</h4>
-              <p>Shows the player what's blocking them if a cheat tool is detected.</p>
-            </div>
-          </div>
-
-          <ul class="tags">
-            <li>C++</li><li>Windows API</li><li>DLL Injection</li><li>IAT Hooking</li><li>Visual Studio 2022</li>
-          </ul>
-        </article>
-
-
-        <!-- BIMS -->
-        <article class="case case--compact" id="bims">
-          <header class="case__head"><div class="case__head-text">
-            <span class="case__eyebrow">Case 03 — Desktop software · Public project</span>
-            <h3 class="case__title">BIMS</h3><p class="case__tagline">Barangay Information Management System</p>
-          </div><a href="https://github.com/projectbaluga/BIMS" target="_blank" rel="noopener" class="btn btn--ghost btn--sm" data-magnetic><svg class="icon icon--fill" aria-hidden="true"><use href="#i-github"/></svg> GitHub <svg class="icon" aria-hidden="true"><use href="#i-arrow-up-right"/></svg></a></header>
-          <p class="case__overview">An offline-first Windows desktop application for barangay operations, bringing resident records, blotter and case tracking, certificate generation with QR verification, inventory, and audit trails into one system.</p>
-          <ul class="tags"><li>C#</li><li>.NET 8</li><li>WPF</li><li>SQLite</li><li>MVVM</li><li>QR Codes</li></ul>
-        </article>
-
-        <!-- EasyBox -->
-        <article class="case case--compact" id="easybox">
-          <header class="case__head"><div class="case__head-text">
-            <span class="case__eyebrow">Case 04 — Networking · Public project</span>
-            <h3 class="case__title">EasyBox</h3><p class="case__tagline">MikroTik Hotspot &amp; PPPoE Management</p>
-          </div><a href="https://github.com/projectbaluga/EasyBox" target="_blank" rel="noopener" class="btn btn--ghost btn--sm" data-magnetic><svg class="icon icon--fill" aria-hidden="true"><use href="#i-github"/></svg> GitHub <svg class="icon" aria-hidden="true"><use href="#i-arrow-up-right"/></svg></a></header>
-          <p class="case__overview">A browser and Android tool for hotspot voucher creation and MikroTik RouterOS v7 management. It includes a visual voucher designer, configurable user credentials and limits, export and print options, plus router controls through the REST API.</p>
-          <ul class="tags"><li>JavaScript</li><li>HTML</li><li>CSS</li><li>Bootstrap</li><li>Capacitor</li><li>MikroTik REST API</li></ul>
-        </article>
-
-        <!-- CloudDesk -->
-        <article class="case case--compact" id="clouddesk">
-          <header class="case__head"><div class="case__head-text">
-            <span class="case__eyebrow">Case 05 — Infrastructure · Public project</span>
-            <h3 class="case__title">CloudDesk</h3><p class="case__tagline">Diskless Boot Management for Windows Networks</p>
-          </div><a href="https://github.com/projectbaluga/CloudDesk" target="_blank" rel="noopener" class="btn btn--ghost btn--sm" data-magnetic><svg class="icon icon--fill" aria-hidden="true"><use href="#i-github"/></svg> GitHub <svg class="icon" aria-hidden="true"><use href="#i-arrow-up-right"/></svg></a></header>
-          <p class="case__overview">A Windows Server-based diskless boot platform that provisions PXE clients using iSCSI targets and differencing virtual disks. A central API and dashboard coordinate client sessions, images, DHCP, TFTP, and writeback storage.</p>
-          <ul class="tags"><li>C#</li><li>.NET 8</li><li>ASP.NET Core</li><li>PowerShell</li><li>SQLite</li><li>Vue.js</li><li>iSCSI</li><li>PXE</li></ul>
-        </article>
-
-        <!-- JuanLend -->
-        <article class="case case--compact" id="juanlend">
-          <header class="case__head"><div class="case__head-text">
-            <span class="case__eyebrow">Case 06 — Fintech · Public project</span>
-            <h3 class="case__title">JuanLend</h3><p class="case__tagline">Local-First Micro-Lending Management Suite</p>
-          </div><a href="https://github.com/projectbaluga/JuanLend" target="_blank" rel="noopener" class="btn btn--ghost btn--sm" data-magnetic><svg class="icon icon--fill" aria-hidden="true"><use href="#i-github"/></svg> GitHub <svg class="icon" aria-hidden="true"><use href="#i-arrow-up-right"/></svg></a></header>
-          <p class="case__overview">A lending management suite for solo operators, with loan amortization schedules, repayment tracking, borrower risk assessment, portfolio analytics, and offline-capable workflows across web and mobile apps.</p>
-          <ul class="tags"><li>React</li><li>Vite</li><li>Flutter</li><li>Dart</li><li>Local-First</li><li>Financial Logic</li><li>GitHub Actions</li></ul>
-        </article>
-
-        <!-- KatoyOS -->
-        <article class="case case--compact" id="katoyos">
-          <header class="case__head"><div class="case__head-text">
-            <span class="case__eyebrow">Case 07 — Operating systems · Public project</span>
-            <h3 class="case__title">KatoyOS</h3><p class="case__tagline">A Lightweight Raspberry Pi Operating System</p>
-          </div><a href="https://github.com/projectbaluga/KatoyOS" target="_blank" rel="noopener" class="btn btn--ghost btn--sm" data-magnetic><svg class="icon icon--fill" aria-hidden="true"><use href="#i-github"/></svg> GitHub <svg class="icon" aria-hidden="true"><use href="#i-arrow-up-right"/></svg></a></header>
-          <p class="case__overview">A Debian 13-based desktop system built specifically for Raspberry Pi 3 Model B. It combines a lightweight LXQt desktop, guided first-boot setup, hardware power monitoring, safer privilege separation, and automated image builds.</p>
-          <ul class="tags"><li>Debian 13</li><li>Raspberry Pi</li><li>Python</li><li>PyQt6</li><li>Linux</li><li>Polkit</li><li>systemd</li><li>pi-gen</li></ul>
-        </article>
-
-        <div class="case__detail"><p class="case__overview"><strong>More private work, kept private.</strong> Additional projects are maintained in private repositories and are intentionally not linked or described publicly. Relevant walkthroughs can be shared on request.</p></div>
-
-        <!-- More on GitHub -->
-        <a class="more-card" href="https://github.com/projectbaluga" target="_blank" rel="noopener">
-          <svg class="icon icon--fill" aria-hidden="true"><use href="#i-github"/></svg>
-          <span>More experiments on <strong>GitHub</strong></span>
-          <svg class="icon more-card__arrow" aria-hidden="true"><use href="#i-arrow-up-right"/></svg>
-        </a>
+        <ul class="tags">
+          <li>Full-Stack Development</li><li>React</li><li>Node.js</li><li>Python</li>
+          <li>C# / .NET</li><li>C++</li><li>Linux</li><li>Docker</li>
+          <li>Networking</li><li>MikroTik</li><li>FreeRADIUS</li><li>Raspberry Pi</li>
+          <li>Automation</li><li>System Integration</li>
+        </ul>
       </div>
     </section>
 
