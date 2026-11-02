@@ -253,9 +253,9 @@
   const rotator = document.getElementById("rotator");
   if (rotator && !prefersReduced) {
     const roles = [
-      "Developer",
-      "Building practical software",
-      "Full-stack & network tooling",
+      "Software Developer",
+      "Full-Stack Development",
+      "Systems & Integration",
     ];
     let roleIndex = 0;
     let charIndex = roles[0].length;
