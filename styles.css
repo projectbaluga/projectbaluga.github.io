@@ -2242,3 +2242,103 @@ a.contact-card:hover {
 
   .grain { animation: none; }
 }
+
+
+/* ------------------------------------------------------------
+   23. Service and project cards — clear, buyer-focused content
+   ------------------------------------------------------------ */
+.service__list {
+  display: grid;
+  gap: 0.55rem;
+  margin: 1.1rem 0;
+  padding-left: 1.1rem;
+  color: var(--text-2);
+  font-size: 0.86rem;
+  line-height: 1.5;
+}
+
+.service__list li::marker { color: var(--accent); }
+
+.service__fit {
+  margin-top: auto !important;
+  padding-top: 0.9rem;
+  border-top: 1px solid var(--border);
+  font-size: 0.82rem !important;
+}
+
+.service__fit strong { color: var(--text); }
+
+.service__note {
+  max-width: 720px;
+  margin: 1.6rem 0 1.2rem;
+  color: var(--text-2);
+  line-height: 1.7;
+}
+
+.project-grid { align-items: stretch; }
+
+.project-card {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  min-height: 100%;
+}
+
+.project-card__eyebrow {
+  margin: 0 0 0.75rem !important;
+  color: var(--accent) !important;
+  font-family: var(--font-mono);
+  font-size: 0.68rem !important;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.project-card h3 {
+  margin: 0 0 0.55rem;
+  font-size: 1.2rem;
+}
+
+.project-card > p:not(.project-card__eyebrow) {
+  margin-bottom: 1.1rem;
+}
+
+.project-card__tags {
+  margin: auto 0 1.1rem;
+  gap: 0.4rem;
+}
+
+.project-card__tags li {
+  font-size: 0.66rem;
+  padding: 0.25rem 0.6rem;
+}
+
+.project-card__link {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.45rem;
+  color: var(--accent);
+  font-size: 0.88rem;
+  font-weight: 600;
+}
+
+.project-card__link .icon { width: 15px; height: 15px; }
+
+@media (max-width: 620px) {
+  .project-card { min-height: auto; }
+}
+
+
+.service-grid .feature {
+  display: flex;
+  flex-direction: column;
+}
+
+.service-grid { grid-template-columns: repeat(3, 1fr); }
+
+@media (max-width: 1020px) {
+  .service-grid { grid-template-columns: repeat(2, 1fr); }
+}
+
+@media (max-width: 620px) {
+  .service-grid { grid-template-columns: 1fr; }
+}
