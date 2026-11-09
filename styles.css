@@ -2326,3 +2326,19 @@ a.contact-card:hover {
 @media (max-width: 620px) {
   .project-card { min-height: auto; }
 }
+
+
+.service-grid .feature {
+  display: flex;
+  flex-direction: column;
+}
+
+.service-grid { grid-template-columns: repeat(3, 1fr); }
+
+@media (max-width: 1020px) {
+  .service-grid { grid-template-columns: repeat(2, 1fr); }
+}
+
+@media (max-width: 620px) {
+  .service-grid { grid-template-columns: 1fr; }
+}
