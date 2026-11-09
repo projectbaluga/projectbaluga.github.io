@@ -452,6 +452,88 @@
   });
 
   // ----------------------------------------------------------
+  //  Project inquiry modal — accessible email hand-off
+  // ----------------------------------------------------------
+  (function () {
+    const modal = document.getElementById("inquiryModal");
+    const form = document.getElementById("inquiryForm");
+    if (!modal || !form) return;
+    const dialog = modal.querySelector(".inquiry-dialog");
+    const closeButtons = modal.querySelectorAll("[data-inquiry-close]");
+    let previousFocus = null;
+
+    function openInquiry(event) {
+      if (event) event.preventDefault();
+      previousFocus = document.activeElement;
+      modal.hidden = false;
+      document.body.classList.add("inquiry-open");
+      dialog.focus();
+      const firstField = form.querySelector("input");
+      if (firstField) firstField.focus({ preventScroll: true });
+    }
+
+    function closeInquiry() {
+      modal.hidden = true;
+      document.body.classList.remove("inquiry-open");
+      if (previousFocus && typeof previousFocus.focus === "function") previousFocus.focus();
+    }
+
+    document.querySelectorAll("[data-inquiry-open]").forEach((trigger) => {
+      trigger.addEventListener("click", openInquiry);
+    });
+    closeButtons.forEach((button) => button.addEventListener("click", closeInquiry));
+
+    modal.addEventListener("click", (event) => {
+      if (event.target === modal.querySelector(".inquiry-modal__backdrop")) closeInquiry();
+    });
+
+    document.addEventListener("keydown", (event) => {
+      if (modal.hidden) return;
+      if (event.key === "Escape") {
+        event.preventDefault();
+        closeInquiry();
+      } else if (event.key === "Tab") {
+        const focusable = Array.from(dialog.querySelectorAll('button:not([disabled]), input:not([disabled]), select:not([disabled]), textarea:not([disabled]), a[href], [tabindex]:not([tabindex="-1"])'))
+          .filter((element) => element.offsetParent !== null);
+        if (!focusable.length) return;
+        const first = focusable[0];
+        const last = focusable[focusable.length - 1];
+        if (event.shiftKey && document.activeElement === first) {
+          event.preventDefault();
+          last.focus();
+        } else if (!event.shiftKey && document.activeElement === last) {
+          event.preventDefault();
+          first.focus();
+        }
+      }
+    });
+
+    form.addEventListener("submit", (event) => {
+      event.preventDefault();
+      if (!form.reportValidity()) return;
+      const data = new FormData(form);
+      const value = (key) => String(data.get(key) || "").trim();
+      const subject = "Project inquiry — " + (value("business") || value("name"));
+      const body = [
+        "PROJECTBALUGA — PROJECT INQUIRY",
+        "",
+        "Name: " + value("name"),
+        "Email: " + value("email"),
+        "Business: " + (value("business") || "Not provided"),
+        "Contact number: " + (value("phone") || "Not provided"),
+        "Service needed: " + value("service"),
+        "Project details:",
+        value("details"),
+        "",
+        "Estimated budget: " + (value("budget") || "Not sure yet"),
+        "Target timeline: " + (value("timeline") || "Flexible / To be discussed")
+      ].join("\n");
+      const mailto = "mailto:projectbaluga@gmail.com?subject=" + encodeURIComponent(subject) + "&body=" + encodeURIComponent(body);
+      window.location.href = mailto;
+    });
+  })();
+
+  // ----------------------------------------------------------
   //  Footer — local time (Asia/Manila) + year + back to top
   // ----------------------------------------------------------
   const timeEl = document.getElementById("localTime");

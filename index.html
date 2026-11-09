@@ -134,10 +134,10 @@
           <svg class="icon theme-toggle__sun" aria-hidden="true"><use href="#i-sun"/></svg>
           <svg class="icon theme-toggle__moon" aria-hidden="true"><use href="#i-moon"/></svg>
         </button>
-        <a href="mailto:projectbaluga@gmail.com" class="btn btn--primary btn--sm nav__cta" data-magnetic>
+        <button type="button" class="btn btn--primary btn--sm nav__cta" data-inquiry-open data-magnetic>
           Get in touch
           <svg class="icon" aria-hidden="true"><use href="#i-arrow-up-right"/></svg>
-        </a>
+        </button>
         <button class="nav__toggle" id="navToggle" aria-label="Toggle menu" aria-expanded="false" aria-controls="navLinks">
           <span></span><span></span>
         </button>
@@ -145,6 +145,75 @@
     </div>
   </header>
   <div class="nav-backdrop" id="navBackdrop" aria-hidden="true"></div>
+
+
+  <!-- Project inquiry modal -->
+  <div class="inquiry-modal" id="inquiryModal" hidden>
+    <div class="inquiry-modal__backdrop" data-inquiry-close></div>
+    <section class="inquiry-dialog" role="dialog" aria-modal="true" aria-labelledby="inquiryTitle" aria-describedby="inquiryIntro" tabindex="-1">
+      <div class="inquiry-dialog__head">
+        <div>
+          <p class="inquiry-eyebrow">PROJECTBALUGA / PROJECT INQUIRY</p>
+          <h2 id="inquiryTitle">Tell me about your project<span>.</span></h2>
+          <p id="inquiryIntro">Share a few details so I can understand what your business needs.</p>
+        </div>
+        <button type="button" class="inquiry-close" aria-label="Close inquiry form" data-inquiry-close>&times;</button>
+      </div>
+      <form id="inquiryForm" class="inquiry-form">
+        <div class="inquiry-form__grid">
+          <label class="inquiry-field">Your name <span>*</span>
+            <input name="name" type="text" autocomplete="name" maxlength="100" required placeholder="e.g. Juan Dela Cruz" />
+          </label>
+          <label class="inquiry-field">Email address <span>*</span>
+            <input name="email" type="email" autocomplete="email" maxlength="160" required placeholder="you@business.com" />
+          </label>
+          <label class="inquiry-field">Business name
+            <input name="business" type="text" autocomplete="organization" maxlength="120" placeholder="Your business (optional)" />
+          </label>
+          <label class="inquiry-field">Contact number
+            <input name="phone" type="tel" autocomplete="tel" maxlength="40" placeholder="Optional" />
+          </label>
+          <label class="inquiry-field inquiry-field--full">What do you need help with? <span>*</span>
+            <select name="service" required>
+              <option value="">Choose a service</option>
+              <option>Custom Business Systems</option>
+              <option>Network &amp; IT Solutions</option>
+              <option>Software &amp; Automation</option>
+              <option>Server / Infrastructure Setup</option>
+              <option>Consultation / Not sure yet</option>
+            </select>
+          </label>
+          <label class="inquiry-field inquiry-field--full">Briefly describe what you want to improve <span>*</span>
+            <textarea name="details" rows="4" maxlength="2000" required placeholder="What challenge are you experiencing, or what would you like the solution to do?"></textarea>
+          </label>
+          <label class="inquiry-field">Estimated budget
+            <select name="budget">
+              <option value="">Not sure yet</option>
+              <option>Below ₱10,000</option>
+              <option>₱10,000–₱25,000</option>
+              <option>₱25,000–₱50,000</option>
+              <option>₱50,000–₱100,000</option>
+              <option>Above ₱100,000</option>
+            </select>
+          </label>
+          <label class="inquiry-field">Target timeline
+            <select name="timeline">
+              <option value="">Flexible / To be discussed</option>
+              <option>As soon as possible</option>
+              <option>Within 1 month</option>
+              <option>Within 1–3 months</option>
+              <option>More than 3 months</option>
+            </select>
+          </label>
+        </div>
+        <p class="inquiry-note">When you submit, your default email app will open with your inquiry prepared. You can review it before sending. This form does not store your information on this website.</p>
+        <div class="inquiry-form__actions">
+          <button type="button" class="btn btn--ghost" data-inquiry-close>Cancel</button>
+          <button type="submit" class="btn btn--primary">Continue to email <span aria-hidden="true">↗</span></button>
+        </div>
+      </form>
+    </section>
+  </div>
 
   <main id="main">
     <!-- ============================== Hero ============================== -->
@@ -168,10 +237,10 @@
         <p class="hero__lead">I help small businesses organize operations, improve connectivity, and reduce repetitive work through custom business systems, practical IT solutions, and automation.</p>
 
         <div class="hero__cta">
-          <a href="#contact" class="btn btn--primary" data-magnetic>
+          <button type="button" class="btn btn--primary" data-inquiry-open data-magnetic>
             Start a project
             <svg class="icon" aria-hidden="true"><use href="#i-arrow-up-right"/></svg>
-          </a>
+          </button>
           <a href="#services" class="btn btn--ghost" data-magnetic>
             Explore services
           </a>
@@ -305,10 +374,10 @@
         <p class="contact__lead">Tell me what your business wants to improve—whether it is a manual workflow, a business system, or a network concern. Share a few details and I can discuss the requirements and a sensible next step.</p>
 
         <div class="contact__cta">
-          <a href="mailto:projectbaluga@gmail.com?subject=Project%20inquiry" class="btn btn--primary btn--lg" data-magnetic>
+          <button type="button" class="btn btn--primary btn--lg" data-inquiry-open data-magnetic>
             Request a project quote
             <svg class="icon" aria-hidden="true"><use href="#i-arrow-up-right"/></svg>
-          </a>
+          </button>
           <button class="btn btn--ghost btn--lg" data-copy="projectbaluga@gmail.com" data-magnetic>
             <svg class="icon" aria-hidden="true"><use href="#i-copy"/></svg>
             Copy email
