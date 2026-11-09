@@ -2404,3 +2404,29 @@ h1,h2,h3,h4{letter-spacing:-.035em}
 .profile-panel__items small{color:var(--text-3);font-size:.82rem;margin-top:.15rem}
 .profile-panel__link{display:inline-flex;gap:.5rem;margin-top:1.4rem;color:var(--accent);font-weight:650;font-size:.9rem}
 .about__profile-panel{align-self:stretch;padding:clamp(1.5rem,3vw,2.4rem);background:var(--surface);border:1px solid var(--border);border-radius:var(--radius-lg);box-shadow:var(--shadow)}
+
+
+/* Restore the native mouse pointer; the decorative custom cursor is disabled. */
+html.has-cursor,
+html.has-cursor a,
+html.has-cursor button,
+html.has-cursor label,
+html.has-cursor input,
+html.has-cursor textarea,
+html.has-cursor select,
+html.has-cursor [role="button"] {
+  cursor: auto !important;
+}
+
+a,
+button,
+[role="button"],
+[ data-zoom ] {
+  cursor: pointer;
+}
+
+input,
+textarea,
+select {
+  cursor: text;
+}
