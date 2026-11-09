@@ -1,12 +1,12 @@
 <!DOCTYPE html>
-<html lang="en" data-theme="dark">
+<html lang="en" data-theme="light">
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <meta name="description" content="Wilson Villanueva builds custom business systems, network solutions, and software automation for small businesses and service providers." />
   <meta name="author" content="Wilson Villanueva" />
   <meta name="keywords" content="Wilson Villanueva, ProjectBaluga, software developer, full-stack development, systems integration, networking, Docker, MikroTik, Camarines Sur" />
-  <meta name="theme-color" content="#08090d" />
+  <meta name="theme-color" content="#f4f7fb" />
   <title>Wilson Villanueva — Business Software &amp; IT Solutions</title>
 
   <!-- Open Graph / social preview -->
@@ -36,7 +36,7 @@
     (function () {
       try {
         var saved = localStorage.getItem("theme");
-        var theme = saved || (window.matchMedia("(prefers-color-scheme: light)").matches ? "light" : "dark");
+        var theme = saved || "light";
         document.documentElement.setAttribute("data-theme", theme);
       } catch (e) { /* keep default */ }
     })();
@@ -268,20 +268,19 @@
             </ul>
           </div>
 
-          <div class="about__photo">
-            <div class="about__photo-frame">
-              <img class="about__photo-img" src="assets/wilson.jpg" alt="Wilson Villanueva"
-                   width="400" height="400" onerror="this.classList.add('is-missing');" />
+          <aside class="about__profile-panel" aria-label="Professional focus">
+            <div class="profile-panel__top">
+              <span class="profile-panel__mark" aria-hidden="true">PB</span>
+              <span class="profile-panel__eyebrow">PROJECTBALUGA / CAPABILITIES</span>
             </div>
-            <span class="about__photo-chip about__photo-chip--loc">
-              <svg class="icon" aria-hidden="true"><use href="#i-map-pin"/></svg>
-              Pili, Camarines Sur
-            </span>
-            <span class="about__photo-chip about__photo-chip--role">
-              <svg class="icon" aria-hidden="true"><use href="#i-terminal"/></svg>
-              Building useful systems
-            </span>
-          </div>
+            <p class="profile-panel__headline">Technology built around the way your business works.</p>
+            <ul class="profile-panel__items">
+              <li><span class="profile-panel__number">01</span><span><strong>Business systems</strong><small>Operations, records &amp; workflows</small></span></li>
+              <li><span class="profile-panel__number">02</span><span><strong>Network solutions</strong><small>Connectivity, access &amp; infrastructure</small></span></li>
+              <li><span class="profile-panel__number">03</span><span><strong>Software automation</strong><small>Integrations, tools &amp; repeatable tasks</small></span></li>
+            </ul>
+            <a class="profile-panel__link" href="#services">Explore capabilities <span aria-hidden="true">↗</span></a>
+          </aside>
         </div>
 
         <div class="principles">
