@@ -2466,3 +2466,10 @@ body.inquiry-open { overflow: hidden; }
   .inquiry-dialog { animation: inquiry-enter .18s ease-out; }
   @keyframes inquiry-enter { from { opacity: 0; transform: translateY(10px) scale(.99); } to { opacity: 1; transform: none; } }
 }
+
+/* Inquiry submission feedback */
+
+.inquiry-status { margin: 1rem 0 0; padding: .85rem 1rem; border: 1px solid var(--border); border-radius: 10px; font-size: .88rem; line-height: 1.5; }
+.inquiry-status.is-success { border-color: #3a9b70; background: rgba(58,155,112,.09); color: var(--text, #17243a); }
+.inquiry-status.is-error { border-color: #c65b5b; background: rgba(198,91,91,.08); color: var(--text, #17243a); }
+.inquiry-form__actions button[disabled] { opacity: .65; cursor: wait; }

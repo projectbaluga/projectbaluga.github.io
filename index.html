@@ -206,10 +206,11 @@
             </select>
           </label>
         </div>
-        <p class="inquiry-note">When you submit, your default email app will open with your inquiry prepared. You can review it before sending. This form does not store your information on this website.</p>
+        <p class="inquiry-note">Your inquiry will be securely sent through FormSubmit to ProjectBaluga. By submitting, you agree to share these details for the purpose of responding to your request. Please do not include passwords or sensitive financial information.</p>
+        <p class="inquiry-status" id="inquiryStatus" role="status" aria-live="polite" hidden></p>
         <div class="inquiry-form__actions">
           <button type="button" class="btn btn--ghost" data-inquiry-close>Cancel</button>
-          <button type="submit" class="btn btn--primary">Continue to email <span aria-hidden="true">↗</span></button>
+          <button type="submit" class="btn btn--primary" id="inquirySubmit">Submit inquiry <span aria-hidden="true">↗</span></button>
         </div>
       </form>
     </section>

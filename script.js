@@ -452,7 +452,7 @@
   });
 
   // ----------------------------------------------------------
-  //  Project inquiry modal — accessible email hand-off
+  //  Project inquiry modal — FormSubmit AJAX delivery
   // ----------------------------------------------------------
   (function () {
     const modal = document.getElementById("inquiryModal");
@@ -460,6 +460,8 @@
     if (!modal || !form) return;
     const dialog = modal.querySelector(".inquiry-dialog");
     const closeButtons = modal.querySelectorAll("[data-inquiry-close]");
+    const submitButton = document.getElementById("inquirySubmit");
+    const status = document.getElementById("inquiryStatus");
     let previousFocus = null;
 
     function openInquiry(event) {
@@ -478,11 +480,16 @@
       if (previousFocus && typeof previousFocus.focus === "function") previousFocus.focus();
     }
 
+    function showStatus(message, type) {
+      status.textContent = message;
+      status.className = "inquiry-status " + (type || "");
+      status.hidden = false;
+    }
+
     document.querySelectorAll("[data-inquiry-open]").forEach((trigger) => {
       trigger.addEventListener("click", openInquiry);
     });
     closeButtons.forEach((button) => button.addEventListener("click", closeInquiry));
-
     modal.addEventListener("click", (event) => {
       if (event.target === modal.querySelector(".inquiry-modal__backdrop")) closeInquiry();
     });
@@ -508,28 +515,47 @@
       }
     });
 
-    form.addEventListener("submit", (event) => {
+    form.addEventListener("submit", async (event) => {
       event.preventDefault();
       if (!form.reportValidity()) return;
-      const data = new FormData(form);
-      const value = (key) => String(data.get(key) || "").trim();
-      const subject = "Project inquiry — " + (value("business") || value("name"));
-      const body = [
-        "PROJECTBALUGA — PROJECT INQUIRY",
-        "",
-        "Name: " + value("name"),
-        "Email: " + value("email"),
-        "Business: " + (value("business") || "Not provided"),
-        "Contact number: " + (value("phone") || "Not provided"),
-        "Service needed: " + value("service"),
-        "Project details:",
-        value("details"),
-        "",
-        "Estimated budget: " + (value("budget") || "Not sure yet"),
-        "Target timeline: " + (value("timeline") || "Flexible / To be discussed")
-      ].join("\n");
-      const mailto = "mailto:projectbaluga@gmail.com?subject=" + encodeURIComponent(subject) + "&body=" + encodeURIComponent(body);
-      window.location.href = mailto;
+
+      const originalLabel = submitButton.innerHTML;
+      submitButton.disabled = true;
+      submitButton.textContent = "Sending…";
+      status.hidden = true;
+
+      const payload = new FormData(form);
+      payload.set("_subject", "New ProjectBaluga inquiry");
+      payload.set("_replyto", String(payload.get("email") || ""));
+      payload.set("_url", window.location.href);
+      payload.set("_honey", "");
+
+      try {
+        const response = await fetch("https://formsubmit.co/ajax/projectbaluga@gmail.com", {
+          method: "POST",
+          headers: { "Accept": "application/json" },
+          body: payload
+        });
+        const result = await response.json();
+
+        // FormSubmit can return HTTP 200 even when the submission was rejected.
+        if (String(result.success) !== "true") {
+          throw new Error(result.message || "The email service could not accept the inquiry.");
+        }
+
+        showStatus("Thank you! Your inquiry has been sent to ProjectBaluga. We’ll get back to you using the email address you provided.", "is-success");
+        form.reset();
+      } catch (error) {
+        showStatus(
+          error.message && error.message.toLowerCase().includes("activation")
+            ? "One-time setup is needed: check projectbaluga@gmail.com for FormSubmit’s activation email, then click its activation link. After that, submissions can be delivered automatically."
+            : "We couldn’t send your inquiry right now. Please try again in a moment or email projectbaluga@gmail.com directly.",
+          "is-error"
+        );
+      } finally {
+        submitButton.disabled = false;
+        submitButton.innerHTML = originalLabel;
+      }
     });
   })();
 
