@@ -216,6 +216,38 @@
     </section>
   </div>
 
+
+  <!-- Smart Service Recommender -->
+  <div class="recommend-modal" id="recommendModal" hidden>
+    <div class="recommend-modal__backdrop" data-recommend-close></div>
+    <section class="recommend-dialog" role="dialog" aria-modal="true" aria-labelledby="recommendTitle" aria-describedby="recommendIntro" tabindex="-1">
+      <header class="recommend-head">
+        <div>
+          <p class="inquiry-eyebrow">PROJECTBALUGA / SMART SERVICE RECOMMENDER</p>
+          <h2 id="recommendTitle">Find the right solution<span>.</span></h2>
+          <p id="recommendIntro">Answer a few questions about your business. We'll suggest services that may fit your needs.</p>
+        </div>
+        <button type="button" class="inquiry-close" aria-label="Close recommender" data-recommend-close>&times;</button>
+      </header>
+      <div class="recommend-progress" aria-label="Assessment progress">
+        <div class="recommend-progress__meta"><span id="recommendStepLabel">Step 1 of 6</span><span id="recommendPercent">17% complete</span></div>
+        <div class="recommend-progress__track"><span id="recommendProgressBar"></span></div>
+      </div>
+      <div id="recommendStepContent" class="recommend-step-content" aria-live="polite"></div>
+      <div id="recommendResults" class="recommend-results" hidden aria-live="polite">
+        <p class="inquiry-eyebrow">YOUR INITIAL ASSESSMENT</p>
+        <h3>Recommended starting point</h3>
+        <div id="recommendPrimary" class="recommend-primary"></div>
+        <div id="recommendSecondary" class="recommend-secondary"></div>
+        <p class="recommend-disclaimer">This is an initial, rules-based recommendation—not a technical audit, fixed quotation, or guarantee of project suitability. Final scope depends on a discussion and assessment.</p>
+      </div>
+      <footer class="recommend-actions">
+        <button type="button" class="btn btn--ghost" id="recommendBack" disabled>Back</button>
+        <button type="button" class="btn btn--primary" id="recommendNext">Continue <span aria-hidden="true">→</span></button>
+      </footer>
+    </section>
+  </div>
+
   <main id="main">
     <!-- ============================== Hero ============================== -->
     <section class="hero" id="top">
@@ -238,7 +270,11 @@
         <p class="hero__lead">I help small businesses organize operations, improve connectivity, and reduce repetitive work through custom business systems, practical IT solutions, and automation.</p>
 
         <div class="hero__cta">
-          <button type="button" class="btn btn--primary" data-inquiry-open data-magnetic>
+          <button type="button" class="btn btn--primary" data-recommend-open data-magnetic>
+            Find my solution
+            <svg class="icon" aria-hidden="true"><use href="#i-compass"/></svg>
+          </button>
+          <button type="button" class="btn btn--ghost" data-inquiry-open data-magnetic>
             Start a project
             <svg class="icon" aria-hidden="true"><use href="#i-arrow-up-right"/></svg>
           </button>

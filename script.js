@@ -662,6 +662,217 @@
   })();
 
   // ----------------------------------------------------------
+  //  Smart Service Recommender — explainable hybrid-ready engine
+  // ----------------------------------------------------------
+  (function () {
+    const modal = document.getElementById("recommendModal");
+    if (!modal) return;
+    const dialog = modal.querySelector(".recommend-dialog");
+    const content = document.getElementById("recommendStepContent");
+    const results = document.getElementById("recommendResults");
+    const back = document.getElementById("recommendBack");
+    const next = document.getElementById("recommendNext");
+    const progress = document.getElementById("recommendProgressBar");
+    const stepLabel = document.getElementById("recommendStepLabel");
+    const percent = document.getElementById("recommendPercent");
+    const services = {
+      systems: { name:"Custom Business Systems", inquiry:"Custom Business Systems", description:"A tailored application may help centralize records, sales, inventory, reporting, or day-to-day business workflows." },
+      network: { name:"Network & IT Solutions", inquiry:"Network & IT Solutions", description:"A network review or IT improvement may help address connectivity, Wi-Fi coverage, device access, and network reliability." },
+      automation: { name:"Software & Automation", inquiry:"Software & Automation", description:"Software integration or workflow automation may reduce repetitive tasks and connect the tools your team already uses." },
+      infrastructure: { name:"Server / Infrastructure Setup", inquiry:"Server / Infrastructure Setup", description:"An infrastructure assessment may help plan reliable hosting, shared resources, backups, and access controls." },
+      consultation: { name:"Technology Consultation", inquiry:"Consultation / Not sure yet", description:"A discovery conversation is the best next step when requirements are broad, mixed, or not yet clear." }
+    };
+    const steps = [
+      { title:"Tell us about your business", hint:"This helps us understand the environment your solution needs to support.", fields:[
+        {name:"industry",label:"What type of business do you operate?",type:"select",required:true,options:["Retail / Store","Food / Restaurant","Online Business","Office / Professional Services","Internet Service Provider / Connectivity","Hospitality / Resort","Manufacturing","Other"]},
+        {name:"team",label:"How many people will use or be affected by the solution?",type:"select",required:true,options:["Just me","2–5 people","6–15 people","16–50 people","More than 50 people"]}
+      ]},
+      { title:"What technology do you use today?", hint:"Select all that apply. It is okay if you are not sure.", fields:[
+        {name:"current",type:"checks",options:["Paper records or manual processes","Spreadsheets (Excel / Google Sheets)","Existing business software","Cloud apps and online tools","Office Wi-Fi or wired network","Servers or shared storage","No formal setup yet","Not sure"]}
+      ]},
+      { title:"What challenges are you experiencing?", hint:"Choose the issues that take time, cause errors, or interrupt your work.", fields:[
+        {name:"challenges",type:"checks",required:true,options:["Manual records are difficult to manage","Inventory, sales, billing, or customer data are scattered","Repetitive data entry or admin tasks","Different apps do not work well together","Slow internet, weak Wi-Fi, or network interruptions","Too many devices or users to manage","Need secure shared files, backups, or hosting","Limited visibility through reports or dashboards","Not sure what technology would help"]}
+      ]},
+      { title:"What would you like to improve?", hint:"Select the outcomes that matter most to your business.", fields:[
+        {name:"goals",type:"checks",required:true,options:["Centralize business records and operations","Improve inventory, sales, billing, or customer tracking","Reduce repetitive work and human error","Connect software, apps, or business processes","Improve internet, Wi-Fi, or network reliability","Manage devices, access, and connectivity","Set up shared files, servers, or backups","Get advice before choosing a solution"]}
+      ]},
+      { title:"A few project details", hint:"These answers help us understand the likely size and urgency. They are not a quotation.", fields:[
+        {name:"scope",label:"What best describes the work?",type:"select",options:["New solution from scratch","Improve or replace an existing setup","Fix a current issue","Explore options / Need guidance"]},
+        {name:"budget",label:"Estimated budget",type:"select",options:["Not sure yet","Below ₱10,000","₱10,000–₱25,000","₱25,000–₱50,000","₱50,000–₱100,000","Above ₱100,000"]},
+        {name:"timeline",label:"When would you like to start?",type:"select",options:["Flexible / Just exploring","As soon as practical","Within 1 month","Within 1–3 months","More than 3 months"]},
+        {name:"notes",label:"Anything else we should know? (optional)",type:"textarea"}
+      ]}
+    ];
+    const state = { step:0, answers:{} };
+    let previousFocus = null;
+    const esc = (value) => String(value).replace(/[&<>"']/g, (c) => ({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
+    function renderStep() {
+      const step = steps[state.step];
+      results.hidden = true;
+      content.hidden = false;
+      content.innerHTML = "<h3>" + step.title + "</h3><p class='recommend-step-hint'>" + step.hint + "</p>" +
+        step.fields.map((field) => {
+          if (field.type === "checks") {
+            const selected = state.answers[field.name] || [];
+            return "<div class='recommend-options' data-field='" + field.name + "'>" + field.options.map((option) =>
+              "<label class='recommend-option'><input type='checkbox' name='" + field.name + "' value='" + esc(option) + "'" + (selected.includes(option) ? " checked" : "") + "><span>" + esc(option) + "</span></label>"
+            ).join("") + "</div>";
+          }
+          const value = state.answers[field.name] || "";
+          if (field.type === "textarea") return "<label class='recommend-field'>" + field.label + "<textarea name='" + field.name + "' rows='3' maxlength='1200' placeholder='Optional details'>" + esc(value) + "</textarea></label>";
+          return "<label class='recommend-field'>" + field.label + (field.required ? " *" : "") + "<select name='" + field.name + "'" + (field.required ? " required" : "") + "><option value=''>Select an option</option>" + field.options.map((option) => "<option" + (value === option ? " selected" : "") + ">" + esc(option) + "</option>").join("") + "</select></label>";
+        }).join("");
+      stepLabel.textContent = "Step " + (state.step + 1) + " of 6";
+      percent.textContent = Math.round(((state.step + 1) / 6) * 100) + "% complete";
+      progress.style.width = ((state.step + 1) / 6 * 100) + "%";
+      back.disabled = state.step === 0;
+      next.textContent = state.step === 4 ? "See recommendations →" : "Continue →";
+      content.querySelector("select, input, textarea")?.focus({ preventScroll:true });
+    }
+    function collectStep() {
+      const step = steps[state.step];
+      for (const field of step.fields) {
+        if (field.type === "checks") {
+          const selected = Array.from(content.querySelectorAll('input[name="' + field.name + '"]:checked')).map((input) => input.value);
+          if (field.required && !selected.length) {
+            content.querySelector("[data-field='" + field.name + "']")?.scrollIntoView({block:"nearest"});
+            content.querySelector("[data-field='" + field.name + "'] input")?.focus();
+            return false;
+          }
+          state.answers[field.name] = selected;
+        } else {
+          const input = content.querySelector('[name="' + field.name + '"]');
+          const value = input ? input.value.trim() : "";
+          if (field.required && !value) { input.focus(); input.reportValidity?.(); return false; }
+          state.answers[field.name] = value;
+        }
+      }
+      return true;
+    }
+    function calculate() {
+      const scores = { systems:0, network:0, automation:0, infrastructure:0, consultation:0 };
+      const reasons = { systems:[], network:[], automation:[], infrastructure:[], consultation:[] };
+      const map = [
+        ["Manual records are difficult to manage","systems",3,"You currently rely on manual records."],
+        ["Inventory, sales, billing, or customer data are scattered","systems",4,"Business records are spread across different places."],
+        ["Repetitive data entry or admin tasks","automation",4,"You want to reduce repetitive administrative work."],
+        ["Different apps do not work well together","automation",4,"Your tools may need better integration."],
+        ["Slow internet, weak Wi-Fi, or network interruptions","network",5,"Connectivity or Wi-Fi reliability is a concern."],
+        ["Too many devices or users to manage","network",3,"Your environment may need more structured network management."],
+        ["Need secure shared files, backups, or hosting","infrastructure",5,"You need to consider shared infrastructure, backups, or hosting."],
+        ["Limited visibility through reports or dashboards","systems",3,"Better reporting and operational visibility are priorities."],
+        ["Not sure what technology would help","consultation",4,"You would like guidance before selecting a solution."]
+      ];
+      (state.answers.challenges || []).forEach((answer) => { const row=map.find((item)=>item[0]===answer); if(row){scores[row[1]]+=row[2];reasons[row[1]].push(row[3]);} });
+      const goals = [
+        ["Centralize business records and operations","systems",4,"You want centralized business information."],
+        ["Improve inventory, sales, billing, or customer tracking","systems",4,"You want clearer tracking of core business activities."],
+        ["Reduce repetitive work and human error","automation",4,"You want to reduce manual effort and errors."],
+        ["Connect software, apps, or business processes","automation",4,"You want disconnected tools to work together."],
+        ["Improve internet, Wi-Fi, or network reliability","network",4,"Reliable connectivity is an important goal."],
+        ["Manage devices, access, and connectivity","network",3,"You need more organized device and access management."],
+        ["Set up shared files, servers, or backups","infrastructure",4,"Shared resources and data protection are priorities."],
+        ["Get advice before choosing a solution","consultation",4,"You prefer a guided assessment before committing."]
+      ];
+      (state.answers.goals || []).forEach((answer)=>{const row=goals.find((item)=>item[0]===answer);if(row){scores[row[1]]+=row[2];reasons[row[1]].push(row[3]);}});
+      const current = state.answers.current || [];
+      if(current.includes("Paper records or manual processes")) scores.systems+=2, scores.automation+=1;
+      if(current.includes("Spreadsheets (Excel / Google Sheets)")) scores.systems+=2, scores.automation+=1;
+      if(current.includes("Office Wi-Fi or wired network")) scores.network+=1;
+      if(current.includes("Servers or shared storage")) scores.infrastructure+=2;
+      if(current.includes("No formal setup yet") || current.includes("Not sure")) scores.consultation+=2;
+      if(state.answers.scope==="New solution from scratch") { scores.systems+=1; scores.infrastructure+=1; }
+      if(state.answers.scope==="Fix a current issue") { scores.network+=1; scores.consultation+=1; }
+      const ranked=Object.keys(scores).filter((key)=>key!=="consultation").map((key)=>({key,score:scores[key]})).sort((a,b)=>b.score-a.score);
+      const total=ranked.reduce((sum,item)=>sum+item.score,0);
+      const top=ranked[0];
+      const second=ranked[1];
+      const uncertain=(state.answers.challenges||[]).includes("Not sure what technology would help");
+      const primaryKey=(!total || scores.consultation>=top.score || (top.score-second.score<=1 && uncertain)) ? "consultation" : top.key;
+      const primaryScore=primaryKey==="consultation"?null:Math.round((top.score/Math.max(total,1))*100);
+      const secondary=ranked.filter((item)=>item.key!==primaryKey && item.score>0).slice(0,2);
+      const primaryReasons=(reasons[primaryKey]||[]).slice(0,3);
+      return {primaryKey,primaryScore,primaryReasons,secondary,scores};
+    }
+    function renderResults() {
+      if(!collectStep()) return;
+      const result=calculate(), primary=services[result.primaryKey];
+      content.hidden=true; results.hidden=false;
+      stepLabel.textContent="Assessment complete"; percent.textContent="100% complete"; progress.style.width="100%";
+      const primaryEl=document.getElementById("recommendPrimary");
+      primaryEl.innerHTML="<span class='recommend-match'>" + (result.primaryScore===null?"Discovery recommended": "Top weighted match · "+result.primaryScore+"% of scored signals") + "</span><h4>"+esc(primary.name)+"</h4><p>"+esc(primary.description)+"</p><ul class='recommend-reasons'>"+(result.primaryReasons.length?result.primaryReasons.map((reason)=>"<li>"+esc(reason)+"</li>").join(""):"<li>Your answers suggest that a short discovery conversation would be useful.</li>")+"</ul>";
+      document.getElementById("recommendSecondary").innerHTML=result.secondary.length?result.secondary.map((item)=>"<article><h4>"+esc(services[item.key].name)+"</h4><p>"+esc(services[item.key].description)+"</p></article>").join(""):"";
+      next.textContent="Continue to project inquiry →";
+      next.dataset.action="inquiry";
+      back.disabled=false;
+      state.result={...result,primary};
+    }
+    function open() {
+      previousFocus=document.activeElement;
+      state.step=0; state.answers={}; delete state.result;
+      modal.hidden=false; document.body.classList.add("recommend-open");
+      next.dataset.action="";
+      renderStep();
+      dialog.focus();
+    }
+    function close() {
+      modal.hidden=true; document.body.classList.remove("recommend-open");
+      if(previousFocus?.focus) previousFocus.focus();
+    }
+    function transferToInquiry() {
+      const inquiry=document.getElementById("inquiryModal");
+      const form=document.getElementById("inquiryForm");
+      if(!inquiry||!form) return;
+      const service=form.querySelector('[name="service"]');
+      const details=form.querySelector('[name="details"]');
+      const budget=form.querySelector('[name="budget"]');
+      const timeline=form.querySelector('[name="timeline"]');
+      const answer=state.answers;
+      service.value=state.result.primary.inquiry;
+      details.value=[
+        "Smart Service Recommender assessment",
+        "Business type: "+(answer.industry||"Not provided"),
+        "Team size: "+(answer.team||"Not provided"),
+        "Current setup: "+((answer.current||[]).join(", ")||"Not provided"),
+        "Challenges: "+((answer.challenges||[]).join("; ")||"Not provided"),
+        "Desired outcomes: "+((answer.goals||[]).join("; ")||"Not provided"),
+        "Project scope: "+(answer.scope||"Not provided"),
+        "Additional notes: "+(answer.notes||"None"),
+        "Recommended service: "+state.result.primary.name
+      ].join("\n");
+      if(budget) budget.value=answer.budget||"";
+      if(timeline) timeline.value=answer.timeline||"";
+      close();
+      const trigger=document.querySelector("[data-inquiry-open]");
+      if(trigger) trigger.click();
+      else { inquiry.hidden=false; document.body.classList.add("inquiry-open"); }
+    }
+    document.querySelectorAll("[data-recommend-open]").forEach((button)=>button.addEventListener("click",open));
+    modal.querySelectorAll("[data-recommend-close]").forEach((button)=>button.addEventListener("click",close));
+    modal.addEventListener("click",(event)=>{if(event.target===modal.querySelector(".recommend-modal__backdrop"))close();});
+    back.addEventListener("click",()=>{
+      if(state.result){delete state.result;next.dataset.action="";renderStep();return;}
+      if(state.step>0){state.step--;renderStep();}
+    });
+    next.addEventListener("click",()=>{
+      if(next.dataset.action==="inquiry"){transferToInquiry();return;}
+      if(!collectStep()) return;
+      if(state.step<4){state.step++;renderStep();}
+      else renderResults();
+    });
+    document.addEventListener("keydown",(event)=>{
+      if(modal.hidden)return;
+      if(event.key==="Escape"){event.preventDefault();close();}
+      if(event.key==="Tab"){
+        const focusable=Array.from(dialog.querySelectorAll('button:not([disabled]),input:not([disabled]),select:not([disabled]),textarea:not([disabled]),[tabindex]:not([tabindex="-1"])')).filter((el)=>el.offsetParent!==null);
+        if(!focusable.length)return;
+        if(event.shiftKey&&document.activeElement===focusable[0]){event.preventDefault();focusable[focusable.length-1].focus();}
+        else if(!event.shiftKey&&document.activeElement===focusable[focusable.length-1]){event.preventDefault();focusable[0].focus();}
+      }
+    });
+  })();
+
+  // ----------------------------------------------------------
   //  Footer — local time (Asia/Manila) + year + back to top
   // ----------------------------------------------------------
   const timeEl = document.getElementById("localTime");
