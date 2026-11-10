@@ -559,6 +559,108 @@
     });
   })();
 
+
+  // ----------------------------------------------------------
+  //  ProjectBaluga AI assistant — session-only conversation
+  // ----------------------------------------------------------
+  (function () {
+    const rootEl = document.getElementById("pbAssistant");
+    if (!rootEl) return;
+    const launcher = document.getElementById("pbAssistantLauncher");
+    const panel = document.getElementById("pbAssistantPanel");
+    const close = document.getElementById("pbAssistantClose");
+    const form = document.getElementById("pbAssistantForm");
+    const input = document.getElementById("pbAssistantInput");
+    const send = document.getElementById("pbAssistantSend");
+    const messagesEl = document.getElementById("pbAssistantMessages");
+    const status = document.getElementById("pbAssistantStatus");
+    const history = [];
+    const maxHistory = 8;
+    let previousFocus = null;
+    let busy = false;
+
+    function openPanel() {
+      previousFocus = document.activeElement;
+      panel.hidden = false;
+      launcher.setAttribute("aria-expanded", "true");
+      document.body.classList.add("pb-assistant-open");
+      input.focus();
+    }
+    function closePanel() {
+      panel.hidden = true;
+      launcher.setAttribute("aria-expanded", "false");
+      document.body.classList.remove("pb-assistant-open");
+      if (previousFocus && typeof previousFocus.focus === "function") previousFocus.focus();
+    }
+    function addMessage(content, kind) {
+      const bubble = document.createElement("div");
+      bubble.className = "pb-assistant__message pb-assistant__message--" + kind;
+      bubble.textContent = content;
+      messagesEl.appendChild(bubble);
+      messagesEl.scrollTop = messagesEl.scrollHeight;
+      return bubble;
+    }
+    function setStatus(message) { status.textContent = message || ""; }
+
+    launcher.addEventListener("click", openPanel);
+    close.addEventListener("click", closePanel);
+    document.addEventListener("keydown", (event) => {
+      if (panel.hidden) return;
+      if (event.key === "Escape") closePanel();
+    });
+
+    form.addEventListener("submit", async (event) => {
+      event.preventDefault();
+      const message = input.value.trim();
+      if (!message || busy) return;
+      const endpoint = rootEl.dataset.apiUrl.trim();
+      if (!endpoint) {
+        setStatus("The assistant is not connected yet. Cloudflare setup is required before it can answer.");
+        return;
+      }
+      if (!/^https:\/\//i.test(endpoint)) {
+        setStatus("Assistant configuration is invalid. Please contact ProjectBaluga.");
+        return;
+      }
+
+      addMessage(message, "user");
+      history.push({ role: "user", content: message });
+      input.value = "";
+      busy = true;
+      send.disabled = true;
+      setStatus("Thinking…");
+      const pending = addMessage("Thinking…", "assistant");
+
+      try {
+        const response = await fetch(endpoint.replace(/\/$/, "") + "/api/chat", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ messages: history.slice(-maxHistory) })
+        });
+        const payload = await response.json().catch(() => ({}));
+        if (!response.ok) {
+          if (response.status === 429) throw new Error("You’ve reached the short-term usage limit. Please wait a minute and try again.");
+          throw new Error(payload.error || "The assistant is temporarily unavailable. Please try again later.");
+        }
+        const answer = typeof payload.reply === "string" ? payload.reply.trim() : "";
+        if (!answer) throw new Error("The assistant returned an empty response. Please try again.");
+        pending.textContent = answer;
+        history.push({ role: "assistant", content: answer });
+        if (history.length > maxHistory) history.splice(0, history.length - maxHistory);
+        setStatus("");
+      } catch (error) {
+        pending.textContent = error.message || "Unable to reach the assistant.";
+        pending.classList.add("pb-assistant__message--error");
+        history.pop();
+        setStatus("Your conversation stays in this page session only.");
+      } finally {
+        busy = false;
+        send.disabled = false;
+        input.focus();
+      }
+    });
+  })();
+
   // ----------------------------------------------------------
   //  Smart Service Recommender — explainable hybrid-ready engine
   // ----------------------------------------------------------

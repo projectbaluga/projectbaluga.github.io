@@ -1,0 +1,11 @@
+name = "projectbaluga-ai-assistant"
+main = "worker.js"
+compatibility_date = "2026-11-10"
+
+[ai]
+binding = "AI"
+
+[[ratelimits]]
+name = "CHAT_LIMITER"
+namespace_id = "817263"
+simple = { limit = 12, period = 60 }

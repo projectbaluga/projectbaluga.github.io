@@ -491,6 +491,39 @@
     </div>
   </footer>
 
+
+  <!-- ProjectBaluga AI assistant (backend URL is configured after Cloudflare deployment) -->
+  <div class="pb-assistant" id="pbAssistant" data-api-url="">
+    <button class="pb-assistant__launcher" id="pbAssistantLauncher" type="button" aria-expanded="false" aria-controls="pbAssistantPanel" aria-label="Open ProjectBaluga AI assistant">
+      <svg class="icon" aria-hidden="true"><use href="#i-message"/></svg>
+      <span>Ask ProjectBaluga</span>
+    </button>
+    <section class="pb-assistant__panel" id="pbAssistantPanel" role="dialog" aria-modal="false" aria-labelledby="pbAssistantTitle" hidden>
+      <header class="pb-assistant__header">
+        <div>
+          <p class="pb-assistant__eyebrow">PROJECTBALUGA / AI ASSISTANT</p>
+          <h2 id="pbAssistantTitle">How can I help?</h2>
+          <p>Ask about business technology, systems, or IT needs.</p>
+        </div>
+        <button class="pb-assistant__close" id="pbAssistantClose" type="button" aria-label="Close assistant">×</button>
+      </header>
+      <div class="pb-assistant__messages" id="pbAssistantMessages" role="log" aria-live="polite" aria-relevant="additions">
+        <div class="pb-assistant__message pb-assistant__message--assistant">
+          Hello! I’m ProjectBaluga’s AI assistant. Tell me a little about your business or the technology challenge you’re working through.
+        </div>
+      </div>
+      <form class="pb-assistant__form" id="pbAssistantForm">
+        <label class="pb-assistant__sr-only" for="pbAssistantInput">Your message</label>
+        <textarea id="pbAssistantInput" rows="2" maxlength="1200" placeholder="Type your question…" required></textarea>
+        <button type="submit" id="pbAssistantSend" aria-label="Send message">
+          <svg class="icon" aria-hidden="true"><use href="#i-arrow-up-right"/></svg>
+        </button>
+      </form>
+      <p class="pb-assistant__notice">AI-generated guidance may be imperfect. Do not share passwords, payment details, or sensitive information. Verify important decisions with ProjectBaluga.</p>
+      <p class="pb-assistant__status" id="pbAssistantStatus" role="status" aria-live="polite"></p>
+    </section>
+  </div>
+
   <!-- Toast -->
   <div class="toast" id="toast" role="status" aria-live="polite"></div>
 
