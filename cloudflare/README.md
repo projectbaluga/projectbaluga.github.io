@@ -5,7 +5,7 @@ This API is designed for the GitHub Pages site at https://projectbaluga.github.i
 ## Free-tier architecture
 
 - Cloudflare Workers Free hosts the API.
-- Cloudflare Workers AI runs `@cf/meta/llama-3.2-1b-instruct`.
+- Cloudflare Workers AI runs `@cf/google/gemma-4-26b-a4b-it`.
 - No OpenAI API key or paid AI provider is required.
 - Conversation history is held only in the visitor's page memory and sent with each request. The Worker does not write chat content to KV, D1, R2, or another database.
 - A Cloudflare Rate Limiting binding provides approximate edge-local throttling (12 requests per 60 seconds per client IP). Shared networks may share this limit; it is not a strict global quota.
