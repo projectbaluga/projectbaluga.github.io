@@ -28,3 +28,8 @@ Open `index.html` in a browser, or serve the repository with any static file ser
 ## Contact
 
 [projectbaluga@gmail.com](mailto:projectbaluga@gmail.com)
+
+
+## AI assistant
+
+The optional ProjectBaluga AI assistant uses a Cloudflare Worker backend. See `cloudflare/README.md` for deployment and configuration. The browser widget remains disconnected until its `data-api-url` is set to the deployed Worker origin.
