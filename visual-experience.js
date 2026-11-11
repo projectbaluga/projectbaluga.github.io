@@ -30,7 +30,7 @@
         const radius=Math.min(width,height)*.365,cx=width*.5,cy=height*.5;
         const projected=points.map(p=>project(p,rotation,tilt,radius,cx,cy));
         const glow=ctx.createRadialGradient(cx,cy,radius*.2,cx,cy,radius*1.35);
-        glow.addColorStop(0,"rgba("+accent+","+(light?.09:.13)+")");glow.addColorStop(1,"rgba(0,0,0,0)");
+        glow.addColorStop(0,"rgba("+accent+","+(light ? 0.09 : 0.13)+")");glow.addColorStop(1,"rgba(0,0,0,0)");
         ctx.fillStyle=glow;ctx.fillRect(0,0,width,height);
         ctx.beginPath();ctx.arc(cx,cy,radius,0,Math.PI*2);ctx.strokeStyle="rgba("+accent+",.25)";ctx.lineWidth=1;ctx.stroke();
         for(let lat=-60;lat<=60;lat+=30){
