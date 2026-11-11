@@ -1,0 +1,8 @@
+{
+  "name": "projectbaluga-security-checks",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "test:worker": "node --test tests/worker.test.js"
+  }
+}
