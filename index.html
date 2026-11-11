@@ -584,11 +584,21 @@
             <p class="pb-assistant__character-status" id="pbAssistantCharacterStatus" role="status" aria-live="polite">Ready to help</p>
           </div>
         </div>
-        <button class="pb-assistant__close" id="pbAssistantClose" type="button" aria-label="Close assistant">×</button>
+        <div class="pb-assistant__header-actions">
+          <button class="pb-assistant__reset" id="pbAssistantReset" type="button" aria-label="Start a new conversation" title="New conversation">New chat</button>
+          <button class="pb-assistant__close" id="pbAssistantClose" type="button" aria-label="Close assistant">×</button>
+        </div>
       </header>
       <div class="pb-assistant__messages" id="pbAssistantMessages" role="log" aria-live="polite" aria-relevant="additions">
         <div class="pb-assistant__message pb-assistant__message--assistant">
           Hello! I’m ProjectBaluga’s AI assistant. Tell me a little about your business or the technology challenge you’re working through.
+        </div>
+        <div class="pb-assistant__suggestions" id="pbAssistantSuggestions" aria-label="Suggested questions">
+          <p>Not sure where to start? Try one of these:</p>
+          <button type="button" data-pb-suggestion="I need an inventory or sales system for my business.">Inventory or sales system</button>
+          <button type="button" data-pb-suggestion="I need help with my office network, Wi-Fi, or IT setup.">Network &amp; IT support</button>
+          <button type="button" data-pb-suggestion="I want to automate repetitive tasks in my business.">Business automation</button>
+          <button type="button" data-pb-suggestion="I need advice about servers, shared files, or backups.">Server &amp; infrastructure</button>
         </div>
       </div>
       <form class="pb-assistant__form" id="pbAssistantForm">

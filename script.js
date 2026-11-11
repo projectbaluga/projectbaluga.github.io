@@ -715,7 +715,6 @@
   })();
 
 
-  // ----------------------------------------------------------
   //  ProjectBaluga AI assistant — session-only conversation
   // ----------------------------------------------------------
   (function () {
@@ -724,6 +723,7 @@
     const launcher = document.getElementById("pbAssistantLauncher");
     const panel = document.getElementById("pbAssistantPanel");
     const close = document.getElementById("pbAssistantClose");
+    const reset = document.getElementById("pbAssistantReset");
     const form = document.getElementById("pbAssistantForm");
     const input = document.getElementById("pbAssistantInput");
     const send = document.getElementById("pbAssistantSend");
@@ -733,6 +733,7 @@
     const characterStatus = document.getElementById("pbAssistantCharacterStatus");
     const history = [];
     const maxHistory = 8;
+    const welcomeText = "Hello! I’m ProjectBaluga’s AI assistant. Tell me a little about your business or the technology challenge you’re working through.";
     let previousFocus = null;
     let busy = false;
 
@@ -741,6 +742,7 @@
       if (characterStatus) characterStatus.textContent = label;
       if (launcher) launcher.dataset.state = state;
     }
+    function setStatus(message) { status.textContent = message || ""; }
     function openPanel() {
       previousFocus = document.activeElement;
       panel.hidden = false;
@@ -756,30 +758,73 @@
       setCharacterState("idle", "Ready to help");
       if (previousFocus && typeof previousFocus.focus === "function") previousFocus.focus();
     }
-    function addMessage(content, kind) {
+    function addCopyAction(bubble, content) {
+      const copy = document.createElement("button");
+      copy.type = "button";
+      copy.className = "pb-assistant__copy";
+      copy.textContent = "Copy";
+      copy.setAttribute("aria-label", "Copy assistant response");
+      copy.addEventListener("click", async () => {
+        try {
+          if (!navigator.clipboard || !navigator.clipboard.writeText) throw new Error("Copy is unavailable in this browser.");
+          await navigator.clipboard.writeText(content);
+          copy.textContent = "Copied";
+          setStatus("Response copied.");
+          window.setTimeout(() => { copy.textContent = "Copy"; }, 1600);
+        } catch {
+          setStatus("Unable to copy automatically. You can select the response text instead.");
+        }
+      });
+      bubble.appendChild(copy);
+    }
+    function addMessage(content, kind, options = {}) {
       const bubble = document.createElement("div");
       bubble.className = "pb-assistant__message pb-assistant__message--" + kind;
-      bubble.textContent = content;
+      const text = document.createElement("span");
+      text.className = "pb-assistant__message-text";
+      text.textContent = content;
+      bubble.appendChild(text);
+      if (options.copy) addCopyAction(bubble, content);
+      if (options.pending) {
+        bubble.classList.add("pb-assistant__message--pending");
+        bubble.setAttribute("aria-label", "Assistant is thinking");
+      }
       messagesEl.appendChild(bubble);
       messagesEl.scrollTop = messagesEl.scrollHeight;
       return bubble;
     }
-    function setStatus(message) { status.textContent = message || ""; }
+    function renderWelcome() {
+      messagesEl.replaceChildren();
+      addMessage(welcomeText, "assistant");
+      const group = document.createElement("div");
+      group.className = "pb-assistant__suggestions";
+      group.id = "pbAssistantSuggestions";
+      group.setAttribute("aria-label", "Suggested questions");
+      const intro = document.createElement("p");
+      intro.textContent = "Not sure where to start? Try one of these:";
+      group.appendChild(intro);
+      [
+        ["Inventory or sales system", "I need an inventory or sales system for my business."],
+        ["Network & IT support", "I need help with my office network, Wi-Fi, or IT setup."],
+        ["Business automation", "I want to automate repetitive tasks in my business."],
+        ["Server & infrastructure", "I need advice about servers, shared files, or backups."]
+      ].forEach(([label, prompt]) => {
+        const button = document.createElement("button");
+        button.type = "button";
+        button.dataset.pbSuggestion = prompt;
+        button.textContent = label;
+        group.appendChild(button);
+      });
+      messagesEl.appendChild(group);
+      messagesEl.scrollTop = messagesEl.scrollHeight;
+    }
 
-    launcher.addEventListener("click", openPanel);
-    close.addEventListener("click", closePanel);
-    document.addEventListener("keydown", (event) => {
-      if (panel.hidden) return;
-      if (event.key === "Escape") closePanel();
-    });
-
-    form.addEventListener("submit", async (event) => {
-      event.preventDefault();
-      const message = input.value.trim();
+    async function sendMessage(rawMessage) {
+      const message = String(rawMessage || "").trim();
       if (!message || busy) return;
-      const endpoint = rootEl.dataset.apiUrl.trim();
+      const endpoint = (rootEl.dataset.apiUrl || "").trim();
       if (!endpoint) {
-        setStatus("The assistant is not connected yet. Cloudflare setup is required before it can answer.");
+        setStatus("The assistant is not connected yet. Please contact ProjectBaluga.");
         return;
       }
       if (!/^https:\/\//i.test(endpoint)) {
@@ -787,14 +832,17 @@
         return;
       }
 
+      const currentSuggestions = messagesEl.querySelector("#pbAssistantSuggestions");
+      if (currentSuggestions) currentSuggestions.remove();
       addMessage(message, "user");
       history.push({ role: "user", content: message });
       input.value = "";
       busy = true;
       send.disabled = true;
+      if (reset) reset.disabled = true;
       setStatus("Thinking…");
       setCharacterState("thinking", "Thinking through your question…");
-      const pending = addMessage("Thinking…", "assistant");
+      const pending = addMessage("Thinking", "assistant", { pending: true });
 
       try {
         const response = await fetch(endpoint.replace(/\/$/, "") + "/api/chat", {
@@ -809,22 +857,51 @@
         }
         const answer = typeof payload.reply === "string" ? payload.reply.trim() : "";
         if (!answer) throw new Error("The assistant returned an empty response. Please try again.");
-        pending.textContent = answer;
+        pending.classList.remove("pb-assistant__message--pending");
+        pending.removeAttribute("aria-label");
+        pending.querySelector(".pb-assistant__message-text").textContent = answer;
+        addCopyAction(pending, answer);
         history.push({ role: "assistant", content: answer });
         if (history.length > maxHistory) history.splice(0, history.length - maxHistory);
         setStatus("");
         setCharacterState("ready", "Here to help");
       } catch (error) {
-        pending.textContent = error.message || "Unable to reach the assistant.";
+        pending.classList.remove("pb-assistant__message--pending");
         pending.classList.add("pb-assistant__message--error");
+        pending.querySelector(".pb-assistant__message-text").textContent = error.message || "Unable to reach the assistant.";
         history.pop();
         setCharacterState("error", "Let's try that again");
         setStatus("Your conversation stays in this page session only.");
       } finally {
         busy = false;
         send.disabled = false;
+        if (reset) reset.disabled = false;
         input.focus();
       }
+    }
+
+    launcher.addEventListener("click", openPanel);
+    close.addEventListener("click", closePanel);
+    if (reset) reset.addEventListener("click", () => {
+      if (busy) return;
+      history.length = 0;
+      input.value = "";
+      setStatus("Started a new conversation.");
+      setCharacterState("idle", "Ready to help");
+      renderWelcome();
+      input.focus();
+    });
+    messagesEl.addEventListener("click", (event) => {
+      const button = event.target.closest("[data-pb-suggestion]");
+      if (button) sendMessage(button.dataset.pbSuggestion);
+    });
+    document.addEventListener("keydown", (event) => {
+      if (panel.hidden) return;
+      if (event.key === "Escape") closePanel();
+    });
+    form.addEventListener("submit", (event) => {
+      event.preventDefault();
+      sendMessage(input.value);
     });
   })();
 
