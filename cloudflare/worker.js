@@ -132,11 +132,27 @@ export default {
 
     let body;
     try {
-      const raw = await request.text();
-      if (new TextEncoder().encode(raw).byteLength > 16000) {
-        return json({ error: "Request is too large." }, 413, origin);
+      const reader = request.body?.getReader();
+      if (!reader) return json({ error: "Invalid JSON request." }, 400, origin);
+      const chunks = [];
+      let totalBytes = 0;
+      while (true) {
+        const { done, value } = await reader.read();
+        if (done) break;
+        totalBytes += value.byteLength;
+        if (totalBytes > 16000) {
+          await reader.cancel();
+          return json({ error: "Request is too large." }, 413, origin);
+        }
+        chunks.push(value);
       }
-      body = JSON.parse(raw);
+      const bytes = new Uint8Array(totalBytes);
+      let offset = 0;
+      for (const chunk of chunks) {
+        bytes.set(chunk, offset);
+        offset += chunk.byteLength;
+      }
+      body = JSON.parse(new TextDecoder().decode(bytes));
     } catch {
       return json({ error: "Invalid JSON request." }, 400, origin);
     }
