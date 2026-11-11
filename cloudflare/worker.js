@@ -103,27 +103,63 @@ export default {
     if (request.method !== "POST") return json({ error: "Method not allowed." }, 405, origin);
     if (!ALLOWED_ORIGINS.has(origin)) return json({ error: "Origin not allowed." }, 403);
 
-    // Approximate edge-local protection. Shared networks may share this limit.
+    // Rate limiting is required: fail closed rather than silently allowing
+    // unmetered AI requests when the binding is missing or unavailable.
     const clientKey = request.headers.get("CF-Connecting-IP") || "unknown-client";
-    if (env.CHAT_LIMITER) {
+    if (!env.CHAT_LIMITER || typeof env.CHAT_LIMITER.limit !== "function") {
+      console.error("Required CHAT_LIMITER binding is missing or invalid.");
+      return json({ error: "Chat service is temporarily unavailable. Please try again later." }, 503, origin);
+    }
+    try {
       const { success } = await env.CHAT_LIMITER.limit({ key: clientKey });
-      if (!success) return json({ error: "Too many requests. Please wait before trying again." }, 429, origin);
+      if (!success) {
+        return json({ error: "Too many requests. Please wait before trying again." }, 429, origin);
+      }
+    } catch (error) {
+      console.error("CHAT_LIMITER request failed:", error?.message || "unknown error");
+      return json({ error: "Chat service is temporarily unavailable. Please try again later." }, 503, origin);
     }
 
     const contentType = request.headers.get("Content-Type") || "";
-    if (!contentType.toLowerCase().includes("application/json")) {
+    if (contentType.split(";")[0].trim().toLowerCase() !== "application/json") {
       return json({ error: "Content-Type must be application/json." }, 415, origin);
+    }
+
+    const declaredLength = Number(request.headers.get("Content-Length"));
+    if (Number.isFinite(declaredLength) && declaredLength > 16000) {
+      return json({ error: "Request is too large." }, 413, origin);
     }
 
     let body;
     try {
-      const raw = await request.text();
-      if (raw.length > 16000) return json({ error: "Request is too large." }, 413, origin);
-      body = JSON.parse(raw);
+      const reader = request.body?.getReader();
+      if (!reader) return json({ error: "Invalid JSON request." }, 400, origin);
+      const chunks = [];
+      let totalBytes = 0;
+      while (true) {
+        const { done, value } = await reader.read();
+        if (done) break;
+        totalBytes += value.byteLength;
+        if (totalBytes > 16000) {
+          await reader.cancel();
+          return json({ error: "Request is too large." }, 413, origin);
+        }
+        chunks.push(value);
+      }
+      const bytes = new Uint8Array(totalBytes);
+      let offset = 0;
+      for (const chunk of chunks) {
+        bytes.set(chunk, offset);
+        offset += chunk.byteLength;
+      }
+      body = JSON.parse(new TextDecoder().decode(bytes));
     } catch {
       return json({ error: "Invalid JSON request." }, 400, origin);
     }
 
+    if (!body || typeof body !== "object" || Array.isArray(body)) {
+      return json({ error: "Please send a valid conversation." }, 400, origin);
+    }
     if (!Array.isArray(body.messages) || body.messages.length < 1 || body.messages.length > MAX_MESSAGES) {
       return json({ error: "Please send a valid conversation." }, 400, origin);
     }
