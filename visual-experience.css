@@ -42,3 +42,12 @@
 @media(max-width:700px){.pb-globe-stage{width:min(82vw,390px);right:-16vw;top:25%;transform:translateY(-50%);opacity:.34}.pb-globe-stage__label,.pb-globe-stage__caption,.pb-globe-stage__hint,.pb-globe-stage__orbit{display:none}.pb-ecosystem__map{min-height:390px}.pb-node{width:124px;min-height:76px;padding:.55rem}.pb-node--systems,.pb-node--automation{left:3%}.pb-node--network,.pb-node--infrastructure{right:3%}.pb-node--systems,.pb-node--network{top:7%}.pb-node--automation,.pb-node--infrastructure{bottom:7%}.pb-ecosystem__core{width:108px;height:108px}.pb-ecosystem__map-note{font-size:.48rem}.pb-ecosystem__detail{display:block}.pb-journey__head{align-items:flex-start;flex-direction:column}.pb-journey__flow{grid-template-columns:1fr 1fr;row-gap:1.3rem}.pb-journey__flow>i{display:none}.pb-journey__step small{font-size:.62rem}}
 @media(max-width:420px){.pb-ecosystem__map{min-height:360px}.pb-node{width:112px}.pb-node strong{font-size:.68rem}.pb-node small{font-size:.51rem}}
 @media(prefers-reduced-motion:reduce){.pb-ecosystem__wires path,.pb-ecosystem__core-pulse{animation:none!important}.pb-node{transition:none}}
+
+
+/* Interaction and hero typography refinements */
+.pb-globe-stage { z-index: 2; }
+.pb-globe { touch-action: none; user-select: none; -webkit-user-select: none; }
+.hero__title { font-size: clamp(2.7rem, 6vw, 5.8rem); }
+@media (max-width: 700px) {
+  .hero__title { font-size: clamp(2.55rem, 9vw, 4rem); }
+}
