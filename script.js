@@ -728,7 +728,6 @@
     const input = document.getElementById("pbAssistantInput");
     const send = document.getElementById("pbAssistantSend");
     const messagesEl = document.getElementById("pbAssistantMessages");
-    const suggestions = document.getElementById("pbAssistantSuggestions");
     const status = document.getElementById("pbAssistantStatus");
     const avatar = document.getElementById("pbAssistantAvatar");
     const characterStatus = document.getElementById("pbAssistantCharacterStatus");
@@ -833,7 +832,8 @@
         return;
       }
 
-      if (suggestions && suggestions.isConnected) suggestions.remove();
+      const currentSuggestions = messagesEl.querySelector("#pbAssistantSuggestions");
+      if (currentSuggestions) currentSuggestions.remove();
       addMessage(message, "user");
       history.push({ role: "user", content: message });
       input.value = "";
