@@ -722,11 +722,13 @@
           if (field.type === "textarea") return "<label class='recommend-field'>" + field.label + "<textarea name='" + field.name + "' rows='3' maxlength='1200' placeholder='Optional details'>" + esc(value) + "</textarea></label>";
           return "<label class='recommend-field'>" + field.label + (field.required ? " *" : "") + "<select name='" + field.name + "'" + (field.required ? " required" : "") + "><option value=''>Select an option</option>" + field.options.map((option) => "<option" + (value === option ? " selected" : "") + ">" + esc(option) + "</option>").join("") + "</select></label>";
         }).join("");
-      stepLabel.textContent = "Step " + (state.step + 1) + " of 6";
-      percent.textContent = Math.round(((state.step + 1) / 6) * 100) + "% complete";
-      progress.style.width = ((state.step + 1) / 6 * 100) + "%";
+      const totalSteps = steps.length;
+      const progressValue = Math.round(((state.step + 1) / totalSteps) * 100);
+      stepLabel.textContent = "Step " + (state.step + 1) + " of " + totalSteps;
+      percent.textContent = progressValue + "% complete";
+      progress.style.width = progressValue + "%";
       back.disabled = state.step === 0;
-      next.textContent = state.step === 4 ? "See recommendations →" : "Continue →";
+      next.textContent = state.step === totalSteps - 1 ? "See recommendations →" : "Continue →";
       content.querySelector("select, input, textarea")?.focus({ preventScroll:true });
     }
     function collectStep() {
@@ -809,14 +811,18 @@
     }
     function open() {
       previousFocus=document.activeElement;
-      state.step=0; state.answers={}; delete state.result;
-      modal.hidden=false; document.body.classList.add("recommend-open");
+      state.step=0;
+      state.answers={};
+      delete state.result;
+      modal.hidden=false;
+      document.body.classList.add("recommend-open");
       next.dataset.action="";
       renderStep();
-      dialog.focus();
+      dialog.focus({ preventScroll: true });
     }
     function close() {
-      modal.hidden=true; document.body.classList.remove("recommend-open");
+      modal.hidden=true;
+      document.body.classList.remove("recommend-open");
       if(previousFocus?.focus) previousFocus.focus();
     }
     function transferToInquiry() {
@@ -839,9 +845,15 @@
         "Project scope: "+(answer.scope||"Not provided"),
         "Additional notes: "+(answer.notes||"None"),
         "Recommended service: "+state.result.primary.name
-      ].join("\n");
+      ].join("\n").slice(0, 2000);
       if(budget) budget.value=answer.budget||"";
-      if(timeline) timeline.value=answer.timeline||"";
+      const timelineMap = {
+        "As soon as practical": "As soon as possible",
+        "Within 1 month": "Within 1 month",
+        "Within 1–3 months": "Within 1–3 months",
+        "More than 3 months": "More than 3 months"
+      };
+      if(timeline) timeline.value=timelineMap[answer.timeline]||"";
       close();
       const trigger=document.querySelector("[data-inquiry-open]");
       if(trigger) trigger.click();
@@ -862,12 +874,28 @@
     });
     document.addEventListener("keydown",(event)=>{
       if(modal.hidden)return;
-      if(event.key==="Escape"){event.preventDefault();close();}
+      if(event.key==="Escape"){
+        event.preventDefault();
+        close();
+        return;
+      }
       if(event.key==="Tab"){
-        const focusable=Array.from(dialog.querySelectorAll('button:not([disabled]),input:not([disabled]),select:not([disabled]),textarea:not([disabled]),[tabindex]:not([tabindex="-1"])')).filter((el)=>el.offsetParent!==null);
-        if(!focusable.length)return;
-        if(event.shiftKey&&document.activeElement===focusable[0]){event.preventDefault();focusable[focusable.length-1].focus();}
-        else if(!event.shiftKey&&document.activeElement===focusable[focusable.length-1]){event.preventDefault();focusable[0].focus();}
+        const focusable=Array.from(dialog.querySelectorAll('button:not([disabled]),input:not([disabled]),select:not([disabled]),textarea:not([disabled]),a[href],[tabindex]:not([tabindex="-1"])'))
+          .filter((el)=>el.offsetParent!==null);
+        if(!focusable.length){
+          event.preventDefault();
+          dialog.focus();
+          return;
+        }
+        const first=focusable[0];
+        const last=focusable[focusable.length-1];
+        if(event.shiftKey&&document.activeElement===first){
+          event.preventDefault();
+          last.focus();
+        } else if(!event.shiftKey&&document.activeElement===last){
+          event.preventDefault();
+          first.focus();
+        }
       }
     });
   })();
