@@ -79,14 +79,23 @@
       }
       function start(){if(frame||!visible||reduceMotion.matches)return;frame=requestAnimationFrame(animate);}
       function stop(){if(frame)cancelAnimationFrame(frame);frame=0;}
-      canvas.addEventListener("pointerdown",event=>{dragging=true;lastX=event.clientX;lastY=event.clientY;canvas.setPointerCapture?.(event.pointerId);});
+      canvas.addEventListener("pointerdown",event=>{
+        if(event.pointerType==="mouse"&&event.button!==0)return;
+        dragging=true;lastX=event.clientX;lastY=event.clientY;velocity=0;
+        event.preventDefault();
+        try{canvas.setPointerCapture(event.pointerId);}catch(_error){}
+      });
       canvas.addEventListener("pointermove",event=>{
-        if(!dragging)return;const dx=event.clientX-lastX,dy=event.clientY-lastY;
-        rotation+=dx*.008;tilt=Math.max(-.65,Math.min(.65,tilt+dy*.006));velocity=dx*.00012;
+        if(!dragging)return;
+        const dx=event.clientX-lastX,dy=event.clientY-lastY;
+        rotation+=dx*.009;tilt=Math.max(-.72,Math.min(.72,tilt+dy*.009));velocity=dx*.00014;
         lastX=event.clientX;lastY=event.clientY;draw();
+        event.preventDefault();
       });
       const endDrag=()=>{dragging=false;};
-      canvas.addEventListener("pointerup",endDrag);canvas.addEventListener("pointercancel",endDrag);
+      canvas.addEventListener("pointerup",endDrag);
+      canvas.addEventListener("pointercancel",endDrag);
+      canvas.addEventListener("lostpointercapture",endDrag);
       canvas.addEventListener("keydown",event=>{
         if(event.key==="ArrowLeft"||event.key==="ArrowRight"){rotation+=event.key==="ArrowLeft"?-.16:.16;draw();event.preventDefault();}
       });
