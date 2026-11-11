@@ -121,7 +121,7 @@ export default {
     }
 
     const contentType = request.headers.get("Content-Type") || "";
-    if (!/^application\\/json(?:\\s*;|$)/i.test(contentType)) {
+    if (contentType.split(";")[0].trim().toLowerCase() !== "application/json") {
       return json({ error: "Content-Type must be application/json." }, 415, origin);
     }
 
