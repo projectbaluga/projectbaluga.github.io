@@ -18,27 +18,31 @@ concurrency:
 
 jobs:
   analyze:
-    name: Analyze JavaScript and GitHub Actions
+    name: Test and analyze JavaScript
     runs-on: ubuntu-latest
     permissions:
       actions: read
       contents: read
       security-events: write
-    strategy:
-      fail-fast: false
-      matrix:
-        language: [javascript-typescript]
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
 
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+
+      - name: Run Cloudflare Worker security tests
+        run: npm run test:worker
+
       - name: Initialize CodeQL
         uses: github/codeql-action/init@v4
         with:
-          languages: ${{ matrix.language }}
+          languages: javascript-typescript
           queries: security-extended
 
       - name: Perform CodeQL analysis
         uses: github/codeql-action/analyze@v4
         with:
-          category: "/language:${{ matrix.language }}"
+          category: "/language:javascript-typescript"
