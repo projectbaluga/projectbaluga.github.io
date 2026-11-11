@@ -9,7 +9,7 @@
   const root = document.documentElement;
 
   // ----------------------------------------------------------
-  //  Generative topography — lightweight canvas background
+  //  Generative topography — interactive, restrained canvas background
   // ----------------------------------------------------------
   (function initTopography() {
     const canvas = document.getElementById("topographyCanvas");
@@ -19,13 +19,12 @@
 
     const reduceMotion = window.matchMedia("(prefers-reduced-motion: reduce)");
     const coarsePointer = window.matchMedia("(pointer: coarse)");
-    let width = 0;
-    let height = 0;
-    let dpr = 1;
-    let frame = 0;
-    let phase = 0;
-    let lastTime = 0;
-    let running = false;
+    let width = 0, height = 0, dpr = 1, frame = 0;
+    let phase = 0, lastTime = 0, running = false;
+    let pointerX = -1000, pointerY = -1000, pointerStrength = 0;
+    let targetX = -1000, targetY = -1000, targetStrength = 0;
+    let scrollAmount = 0, targetSectionStrength = 1;
+    let sectionStrength = 1;
 
     function resize() {
       dpr = Math.min(window.devicePixelRatio || 1, 1.5);
@@ -40,16 +39,19 @@
     function draw() {
       ctx.clearRect(0, 0, width, height);
       const isLight = root.getAttribute("data-theme") === "light";
-      const lineCount = width < 700 ? 15 : 25;
-      const step = width < 700 ? 18 : 15;
-      const baseGap = Math.max(23, height / (lineCount + 2));
+      const mobile = width < 700;
+      const lineCount = mobile ? 13 : 24;
+      const step = mobile ? 22 : 16;
+      const baseGap = Math.max(24, height / (lineCount + 2));
       const ink = isLight ? "72, 86, 111" : "151, 166, 193";
       const accent = isLight ? "91, 77, 238" : "139, 125, 255";
+      const intensity = sectionStrength * (mobile ? 0.76 : 1);
+      const scrollDrift = Math.min(scrollAmount, 1) * 20;
 
-      ctx.lineWidth = width < 700 ? 0.8 : 0.95;
+      ctx.lineWidth = mobile ? 0.75 : 0.9;
       for (let line = 0; line < lineCount; line++) {
-        const centerY = height * 0.12 + line * baseGap;
-        const strength = 0.35 + (Math.sin(line * 0.71) + 1) * 0.18;
+        const centerY = height * 0.10 + line * baseGap;
+        const strength = 0.32 + (Math.sin(line * 0.71) + 1) * 0.18;
         ctx.beginPath();
 
         for (let x = -step; x <= width + step; x += step) {
@@ -57,21 +59,32 @@
           const broad = Math.sin(nx * 5.1 + line * 0.19 + phase) * 18;
           const fine = Math.sin(nx * 11.4 - line * 0.31 + phase * 0.62) * 6;
           const bend = Math.cos(nx * 2.7 + phase * 0.38) * 13;
-          const y = centerY + broad + fine + bend;
+          const dx = x - pointerX;
+          const dy = centerY - pointerY;
+          const distance = Math.sqrt(dx * dx + dy * dy);
+          const influence = pointerStrength * Math.exp(-(distance * distance) / (width * width * 0.035));
+          const cursorBend = Math.sin((nx * 7) + phase) * influence * 15;
+          const y = centerY + broad + fine + bend + cursorBend + scrollDrift * (0.25 + line / lineCount);
           if (x === -step) ctx.moveTo(x, y);
           else ctx.lineTo(x, y);
         }
 
         const isAccentLine = line % 8 === 3;
+        const alpha = (isAccentLine ? (isLight ? 0.115 : 0.14) : (isLight ? 0.075 : 0.095)) * intensity;
         ctx.strokeStyle = isAccentLine
-          ? `rgba(${accent}, ${strength * (isLight ? 0.105 : 0.13)})`
-          : `rgba(${ink}, ${strength * (isLight ? 0.075 : 0.095)})`;
+          ? `rgba(${accent}, ${strength * alpha})`
+          : `rgba(${ink}, ${strength * alpha})`;
         ctx.stroke();
       }
 
-      // A restrained focal contour near the hero's right edge.
-      const glow = ctx.createRadialGradient(width * 0.78, height * 0.28, 0, width * 0.78, height * 0.28, Math.max(width, height) * 0.48);
-      glow.addColorStop(0, isLight ? "rgba(91, 77, 238, 0.035)" : "rgba(139, 125, 255, 0.045)");
+      const glowX = pointerStrength > 0.025 ? pointerX : width * 0.78;
+      const glowY = pointerStrength > 0.025 ? pointerY : height * 0.28;
+      const glowRadius = Math.max(width, height) * (pointerStrength > 0.025 ? 0.24 : 0.42);
+      const glow = ctx.createRadialGradient(glowX, glowY, 0, glowX, glowY, glowRadius);
+      const glowAlpha = (pointerStrength > 0.025 ? 0.052 : 0.032) * intensity;
+      glow.addColorStop(0, isLight
+        ? `rgba(91, 77, 238, ${glowAlpha})`
+        : `rgba(139, 125, 255, ${glowAlpha})`);
       glow.addColorStop(1, "rgba(0, 0, 0, 0)");
       ctx.fillStyle = glow;
       ctx.fillRect(0, 0, width, height);
@@ -80,7 +93,12 @@
     function animate(time) {
       if (!running) return;
       if (!lastTime || time - lastTime > 32) {
-        phase += 0.0018;
+        pointerX += (targetX - pointerX) * 0.075;
+        pointerY += (targetY - pointerY) * 0.075;
+        pointerStrength += (targetStrength - pointerStrength) * 0.055;
+        sectionStrength += (targetSectionStrength - sectionStrength) * 0.035;
+        scrollAmount += ((window.scrollY / Math.max(document.documentElement.scrollHeight - height, 1)) - scrollAmount) * 0.045;
+        phase += 0.0017 + scrollAmount * 0.00045;
         draw();
         lastTime = time;
       }
@@ -100,9 +118,31 @@
       frame = 0;
     }
 
+    if (!coarsePointer.matches && !reduceMotion.matches) {
+      window.addEventListener("pointermove", (event) => {
+        targetX = event.clientX;
+        targetY = event.clientY;
+        targetStrength = 1;
+      }, { passive: true });
+      window.addEventListener("pointerleave", () => { targetStrength = 0; }, { passive: true });
+      window.addEventListener("blur", () => { targetStrength = 0; }, { passive: true });
+    }
+
+    const sections = document.querySelectorAll("main > section");
+    if ("IntersectionObserver" in window && sections.length) {
+      const sectionObserver = new IntersectionObserver((entries) => {
+        entries.forEach((entry) => {
+          if (!entry.isIntersecting) return;
+          const id = entry.target.id;
+          targetSectionStrength = id === "top" ? 1 : (id === "contact" ? 0.48 : 0.68);
+          root.dataset.backgroundSection = id || "content";
+        });
+      }, { threshold: 0.18 });
+      sections.forEach((section) => sectionObserver.observe(section));
+    }
+
     resize();
     if (!reduceMotion.matches) start();
-
     window.addEventListener("resize", resize, { passive: true });
     document.addEventListener("visibilitychange", () => {
       if (document.hidden) stop();
@@ -111,17 +151,17 @@
     reduceMotion.addEventListener?.("change", () => {
       if (reduceMotion.matches) {
         stop();
+        targetStrength = 0;
+        pointerStrength = 0;
         draw();
       } else {
         start();
       }
     });
 
-    // Redraw after a theme switch so contour tones stay balanced.
     const themeObserver = new MutationObserver(draw);
     themeObserver.observe(root, { attributes: true, attributeFilter: ["data-theme"] });
   })();
-
 
   // ----------------------------------------------------------
   //  Theme toggle — with circular reveal via View Transitions
