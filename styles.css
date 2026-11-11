@@ -2807,3 +2807,40 @@ body.recommend-open { overflow: hidden; }
 .pb-emoji-note { margin: 1.5rem 0 0; color: var(--text-3); font-size: 0.8rem; text-align: center; }
 @media (max-width: 760px) { .pb-emoji-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 0.75rem; } }
 @media (max-width: 360px) { .pb-emoji-card { padding-inline: 0.65rem; } .pb-emoji-face { width: 72px; height: 72px; font-size: 2.7rem; } }
+
+
+/* ProjectBaluga mascot avatar inside the AI assistant */
+.pb-assistant__identity { display: flex; align-items: center; gap: 0.9rem; min-width: 0; }
+.pb-assistant__identity-copy { min-width: 0; }
+.pb-assistant__identity-copy h2 { margin: 0.12rem 0 0.15rem; }
+.pb-assistant__identity-copy .pb-assistant__eyebrow { margin: 0; }
+.pb-assistant__character-status { margin: 0; color: var(--text-2); font-size: 0.78rem; }
+.pb-assistant__avatar {
+  position: relative; flex: 0 0 64px; width: 64px; height: 64px;
+  display: grid; place-items: center; overflow: hidden;
+  border: 1px solid var(--border-2); border-radius: 20px;
+  background: var(--surface-2); box-shadow: 0 8px 22px rgba(0,0,0,.12);
+  transform: translateZ(0);
+}
+.pb-assistant__avatar img { display: block; width: 100%; height: 100%; object-fit: contain; padding: 3px; }
+.pb-assistant__avatar-pulse {
+  position: absolute; right: 3px; bottom: 3px; width: 11px; height: 11px;
+  border: 2px solid var(--surface); border-radius: 50%; background: var(--accent-2);
+}
+.pb-assistant__avatar[data-state="thinking"] img { animation: pb-mascot-think 1.15s ease-in-out infinite; }
+.pb-assistant__avatar[data-state="ready"] img { animation: pb-mascot-pop .42s ease-out; }
+.pb-assistant__avatar[data-state="error"] { border-color: var(--accent-3); }
+.pb-assistant__avatar[data-state="error"] .pb-assistant__avatar-pulse { background: var(--accent-3); }
+.pb-assistant__launcher-avatar {
+  display: inline-grid; place-items: center; width: 30px; height: 30px;
+  flex: 0 0 30px; overflow: hidden; border-radius: 10px;
+  background: var(--surface-2); border: 1px solid var(--border);
+}
+.pb-assistant__launcher-avatar img { width: 100%; height: 100%; object-fit: contain; }
+.pb-assistant__launcher[data-state="thinking"] .pb-assistant__launcher-avatar img { animation: pb-mascot-think 1.15s ease-in-out infinite; }
+@keyframes pb-mascot-think { 0%,100% { transform: translateY(0) rotate(0); } 35% { transform: translateY(-3px) rotate(-4deg); } 70% { transform: translateY(1px) rotate(3deg); } }
+@keyframes pb-mascot-pop { 0% { transform: scale(.88); } 65% { transform: scale(1.08); } 100% { transform: scale(1); } }
+@media (max-width: 420px) { .pb-assistant__avatar { width: 54px; height: 54px; flex-basis: 54px; border-radius: 17px; } .pb-assistant__identity { gap: .7rem; } }
+@media (prefers-reduced-motion: reduce) {
+  .pb-assistant__avatar img, .pb-assistant__launcher-avatar img { animation: none !important; }
+}

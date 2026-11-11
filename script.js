@@ -574,22 +574,31 @@
     const send = document.getElementById("pbAssistantSend");
     const messagesEl = document.getElementById("pbAssistantMessages");
     const status = document.getElementById("pbAssistantStatus");
+    const avatar = document.getElementById("pbAssistantAvatar");
+    const characterStatus = document.getElementById("pbAssistantCharacterStatus");
     const history = [];
     const maxHistory = 8;
     let previousFocus = null;
     let busy = false;
 
+    function setCharacterState(state, label) {
+      if (avatar) avatar.dataset.state = state;
+      if (characterStatus) characterStatus.textContent = label;
+      if (launcher) launcher.dataset.state = state;
+    }
     function openPanel() {
       previousFocus = document.activeElement;
       panel.hidden = false;
       launcher.setAttribute("aria-expanded", "true");
       document.body.classList.add("pb-assistant-open");
+      setCharacterState("idle", "Ready to help");
       input.focus();
     }
     function closePanel() {
       panel.hidden = true;
       launcher.setAttribute("aria-expanded", "false");
       document.body.classList.remove("pb-assistant-open");
+      setCharacterState("idle", "Ready to help");
       if (previousFocus && typeof previousFocus.focus === "function") previousFocus.focus();
     }
     function addMessage(content, kind) {
@@ -629,6 +638,7 @@
       busy = true;
       send.disabled = true;
       setStatus("Thinking…");
+      setCharacterState("thinking", "Thinking through your question…");
       const pending = addMessage("Thinking…", "assistant");
 
       try {
@@ -648,10 +658,12 @@
         history.push({ role: "assistant", content: answer });
         if (history.length > maxHistory) history.splice(0, history.length - maxHistory);
         setStatus("");
+        setCharacterState("ready", "Here to help");
       } catch (error) {
         pending.textContent = error.message || "Unable to reach the assistant.";
         pending.classList.add("pb-assistant__message--error");
         history.pop();
+        setCharacterState("error", "Let's try that again");
         setStatus("Your conversation stays in this page session only.");
       } finally {
         busy = false;

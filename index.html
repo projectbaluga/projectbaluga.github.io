@@ -379,36 +379,6 @@
 
     <!-- ============================== Process ============================== -->
 
-    <!-- ProjectBaluga emoji collection preview -->
-    <section class="section pb-emoji-section" id="emoji-collection">
-      <div class="container">
-        <div class="section__head">
-          <p class="eyebrow">PROJECTBALUGA / EMOJI COLLECTION</p>
-          <h2>A little more personality.<br><em class="serif">A lot more connection.</em></h2>
-          <p class="section__intro">Meet the ProjectBaluga mascot in a set of friendly expressions for everyday conversations.</p>
-        </div>
-        <div class="pb-emoji-grid" aria-label="ProjectBaluga emoji preview">
-          <article class="pb-emoji-card"><span class="pb-emoji-face" aria-hidden="true">👍</span><h3>Thumbs up</h3><p>All good!</p></article>
-          <article class="pb-emoji-card"><span class="pb-emoji-face" aria-hidden="true">👌</span><h3>OK</h3><p>Got it.</p></article>
-          <article class="pb-emoji-card"><span class="pb-emoji-face" aria-hidden="true">🤔</span><h3>Thinking</h3><p>Let me check.</p></article>
-          <article class="pb-emoji-card"><span class="pb-emoji-face" aria-hidden="true">🎉</span><h3>Celebrate</h3><p>Great news!</p></article>
-          <article class="pb-emoji-card"><span class="pb-emoji-face" aria-hidden="true">👋</span><h3>Hello</h3><p>Welcome!</p></article>
-          <article class="pb-emoji-card"><span class="pb-emoji-face" aria-hidden="true">💻</span><h3>At work</h3><p>On it.</p></article>
-          <article class="pb-emoji-card"><span class="pb-emoji-face" aria-hidden="true">💡</span><h3>New idea</h3><p>Here's a thought.</p></article>
-          <article class="pb-emoji-card"><span class="pb-emoji-face" aria-hidden="true">❤️</span><h3>Appreciation</h3><p>Thank you!</p></article>
-          <article class="pb-emoji-card"><span class="pb-emoji-face" aria-hidden="true">🙏</span><h3>Sorry</h3><p>Our apologies.</p></article>
-          <article class="pb-emoji-card"><span class="pb-emoji-face" aria-hidden="true">🛠️</span><h3>Here to help</h3><p>We'll work on it.</p></article>
-          <article class="pb-emoji-card"><span class="pb-emoji-face" aria-hidden="true">🥳</span><h3>Good news</h3><p>We did it!</p></article>
-          <article class="pb-emoji-card"><span class="pb-emoji-face" aria-hidden="true">☕</span><h3>Coffee break</h3><p>Take your time.</p></article>
-          <article class="pb-emoji-card"><span class="pb-emoji-face" aria-hidden="true">🧩</span><h3>Problem solving</h3><p>Let's solve this.</p></article>
-          <article class="pb-emoji-card"><span class="pb-emoji-face" aria-hidden="true">😮</span><h3>Surprised</h3><p>Oh!</p></article>
-          <article class="pb-emoji-card"><span class="pb-emoji-face" aria-hidden="true">🙌</span><h3>Goodbye</h3><p>See you soon!</p></article>
-          <article class="pb-emoji-card pb-emoji-card--brand"><span class="pb-emoji-face" aria-hidden="true">🐟</span><h3>ProjectBaluga</h3><p>Practical technology, made approachable.</p></article>
-        </div>
-        <p class="pb-emoji-note">Preview version: these are temporary emoji placeholders while the illustrated mascot stickers are being prepared.</p>
-      </div>
-    </section>
-
     <section class="section section--alt" id="process">
       <div class="container">
         <header class="section-head">
@@ -526,15 +496,21 @@
   <!-- ProjectBaluga AI assistant (backend URL is configured after Cloudflare deployment) -->
   <div class="pb-assistant" id="pbAssistant" data-api-url="https://projectbaluga-ai-assistant.projectbaluga.workers.dev">
     <button class="pb-assistant__launcher" id="pbAssistantLauncher" type="button" aria-expanded="false" aria-controls="pbAssistantPanel" aria-label="Open ProjectBaluga AI assistant">
-      <svg class="icon" aria-hidden="true"><use href="#i-message"/></svg>
+      <span class="pb-assistant__launcher-avatar" aria-hidden="true"><img src="assets/favicon-512.png" alt="" /></span>
       <span>Ask ProjectBaluga</span>
     </button>
     <section class="pb-assistant__panel" id="pbAssistantPanel" role="dialog" aria-modal="false" aria-labelledby="pbAssistantTitle" hidden>
       <header class="pb-assistant__header">
-        <div>
-          <p class="pb-assistant__eyebrow">PROJECTBALUGA / AI ASSISTANT</p>
-          <h2 id="pbAssistantTitle">How can I help?</h2>
-          <p>Ask about business technology, systems, or IT needs.</p>
+        <div class="pb-assistant__identity">
+          <div class="pb-assistant__avatar" id="pbAssistantAvatar" data-state="idle">
+            <img src="assets/favicon-512.png" alt="ProjectBaluga mascot" />
+            <span class="pb-assistant__avatar-pulse" aria-hidden="true"></span>
+          </div>
+          <div class="pb-assistant__identity-copy">
+            <p class="pb-assistant__eyebrow">PROJECTBALUGA / AI ASSISTANT</p>
+            <h2 id="pbAssistantTitle">How can I help?</h2>
+            <p class="pb-assistant__character-status" id="pbAssistantCharacterStatus" role="status" aria-live="polite">Ready to help</p>
+          </div>
         </div>
         <button class="pb-assistant__close" id="pbAssistantClose" type="button" aria-label="Close assistant">×</button>
       </header>
