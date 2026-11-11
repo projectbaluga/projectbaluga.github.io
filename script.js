@@ -906,7 +906,7 @@
   })();
 
   // ----------------------------------------------------------
- — explainable hybrid-ready engine
+  //  Smart Service Recommender — explainable hybrid-ready engine
   // ----------------------------------------------------------
   (function () {
     const modal = document.getElementById("recommendModal");
