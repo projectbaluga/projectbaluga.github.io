@@ -2926,3 +2926,25 @@ body {
     opacity: 0.42;
   }
 }
+
+
+/* Interactive topography: restrained response to pointer, scroll and sections. */
+.topography-canvas {
+  opacity: 0.82;
+  transition: opacity 700ms ease;
+}
+html[data-background-section="contact"] .topography-canvas {
+  opacity: 0.48;
+}
+html[data-background-section="services"] .topography-canvas,
+html[data-background-section="process"] .topography-canvas,
+html[data-background-section="projects"] .topography-canvas {
+  opacity: 0.68;
+}
+@media (max-width: 700px) {
+  .topography-canvas { opacity: 0.58; }
+  html[data-background-section] .topography-canvas { opacity: 0.54; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .topography-canvas { opacity: 0.38; transition: none; }
+}
