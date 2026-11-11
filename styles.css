@@ -2766,3 +2766,44 @@ body.recommend-open { overflow: hidden; }
     to { opacity: 1; transform: none; }
   }
 }
+
+
+/* ------------------------------------------------------------
+   ProjectBaluga emoji collection preview
+   ------------------------------------------------------------ */
+.pb-emoji-section { overflow: hidden; }
+.pb-emoji-section .section__head { max-width: 720px; margin-bottom: 2.5rem; }
+.pb-emoji-section .section__intro { color: var(--text-2); max-width: 58ch; }
+.pb-emoji-grid {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 1rem;
+}
+.pb-emoji-card {
+  min-width: 0;
+  padding: 1.35rem 1rem 1.2rem;
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  background: var(--surface);
+  text-align: center;
+  box-shadow: var(--shadow);
+  transition: transform var(--transition), border-color var(--transition);
+}
+.pb-emoji-card:hover { transform: translateY(-4px); border-color: var(--accent); }
+.pb-emoji-face {
+  display: grid;
+  place-items: center;
+  width: 88px;
+  height: 88px;
+  margin: 0 auto 0.85rem;
+  border-radius: 24px;
+  background: var(--accent-soft);
+  font-size: 3.2rem;
+  line-height: 1;
+}
+.pb-emoji-card h3 { margin: 0 0 0.2rem; font-size: 1rem; }
+.pb-emoji-card p { margin: 0; color: var(--text-2); font-size: 0.84rem; }
+.pb-emoji-card--brand .pb-emoji-face { background: linear-gradient(135deg, var(--accent-soft), rgba(11, 171, 147, 0.16)); }
+.pb-emoji-note { margin: 1.5rem 0 0; color: var(--text-3); font-size: 0.8rem; text-align: center; }
+@media (max-width: 760px) { .pb-emoji-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 0.75rem; } }
+@media (max-width: 360px) { .pb-emoji-card { padding-inline: 0.65rem; } .pb-emoji-face { width: 72px; height: 72px; font-size: 2.7rem; } }
