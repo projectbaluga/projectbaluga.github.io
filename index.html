@@ -475,11 +475,17 @@
 
         <div class="footer__col">
           <h4>Status</h4>
-          <p class="footer__status"><span class="pulse-dot" aria-hidden="true"></span> Open to freelance work</p>
-          <p class="footer__time">
-            <svg class="icon" aria-hidden="true"><use href="#i-clock"/></svg>
-            <span id="localTime">--:--:--</span> PHT · Camarines Sur, PH
-          </p>
+          <div class="footer__availability">
+            <p class="footer__status"><span class="pulse-dot" aria-hidden="true"></span><span>Open to freelance work</span></p>
+            <div class="footer__time">
+              <span class="footer__time-label">Local time</span>
+              <span class="footer__time-value">
+                <svg class="icon" aria-hidden="true"><use href="#i-clock"/></svg>
+                <time id="localTime">--:--:--</time>
+                <span class="footer__timezone">PHT · Camarines Sur, PH</span>
+              </span>
+            </div>
+          </div>
         </div>
       </div>
 
