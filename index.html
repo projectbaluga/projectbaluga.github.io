@@ -29,6 +29,7 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,300..800&family=Instrument+Serif:ital@0;1&family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet" />
   <link rel="stylesheet" href="styles.css" />
+  <link rel="stylesheet" href="visual-experience.css" />
 
   <!-- Set the theme before first paint to avoid a flash -->
   <script>
@@ -135,7 +136,8 @@
 
       <nav class="nav__menu" aria-label="Primary">
         <ul class="nav__links" id="navLinks">
-          <li><a href="#about" data-spy="about"><span class="nav__index">01</span>About</a></li>
+          <li><a href="#about" data-spy="about"><span class="nav__index">01</span>About</a>
+          <li><a href="#technology" data-spy="technology"><span class="nav__index">02</span>Technology</a></li></li>
           <li><a href="#services" data-spy="services"><span class="nav__index">02</span>Services</a></li>
           <li><a href="#process" data-spy="process"><span class="nav__index">03</span>How We Work</a></li>
           <li><a href="#contact" data-spy="contact"><span class="nav__index">04</span>Contact</a></li>
@@ -297,6 +299,14 @@
           </div>
       </div>
 
+      <div class="pb-globe-stage" aria-label="Interactive illustration of a connected digital world">
+        <div class="pb-globe-stage__orbit pb-globe-stage__orbit--one" aria-hidden="true"></div>
+        <div class="pb-globe-stage__orbit pb-globe-stage__orbit--two" aria-hidden="true"></div>
+        <canvas class="pb-globe" id="pbGlobe" aria-label="Rotating illustrated globe with connected network points. Drag to rotate." role="img" tabindex="0"></canvas>
+        <div class="pb-globe-stage__label"><span class="pb-live-dot"></span><span>CONNECTED BY DESIGN</span></div>
+        <div class="pb-globe-stage__caption"><strong>Technology without borders.</strong><span>Systems · Networks · Automation</span></div>
+        <span class="pb-globe-stage__hint" aria-hidden="true">DRAG TO EXPLORE ↗</span>
+      </div>
       <a href="#about" class="hero__scroll" aria-label="Scroll down">
         <span class="hero__scroll-text">Scroll</span>
         <span class="hero__scroll-line"></span>
@@ -334,12 +344,55 @@
         </div>
     </section>
 
+    <!-- Interactive technology experience -->
+    <section class="pb-ecosystem section" id="technology">
+      <div class="container">
+        <header class="section-head">
+          <div class="section-head__meta"><span class="section-head__num">(02)</span><span class="section-head__label">Inside the ecosystem</span></div>
+          <h2 class="section-head__title">One connected <em class="serif">business system</em></h2>
+        </header>
+        <p class="pb-ecosystem__intro">A business runs on connected tools, information, and infrastructure. Explore how the pieces can work together.</p>
+        <div class="pb-ecosystem__layout">
+          <div class="pb-ecosystem__map" aria-label="Interactive diagram of connected business technology">
+            <svg class="pb-ecosystem__wires" viewBox="0 0 720 460" preserveAspectRatio="none" aria-hidden="true">
+              <path d="M360 230 C250 180 210 100 115 92"/><path d="M360 230 C470 180 510 100 605 92"/>
+              <path d="M360 230 C245 260 210 360 115 368"/><path d="M360 230 C475 260 510 360 605 368"/>
+              <path d="M115 92 C250 20 470 20 605 92"/><path d="M115 368 C250 440 470 440 605 368"/>
+              <path d="M115 92 C40 220 40 240 115 368"/><path d="M605 92 C680 220 680 240 605 368"/>
+            </svg>
+            <div class="pb-ecosystem__core"><span class="pb-ecosystem__core-mark">PB</span><strong>Business</strong><small>One connected operation</small><span class="pb-ecosystem__core-pulse"></span></div>
+            <button class="pb-node pb-node--systems is-active" type="button" data-ecosystem="systems" aria-pressed="true"><span class="pb-node__icon">▦</span><strong>Business systems</strong><small>Records &amp; workflows</small></button>
+            <button class="pb-node pb-node--network" type="button" data-ecosystem="network" aria-pressed="false"><span class="pb-node__icon">⌘</span><strong>Networks</strong><small>Devices &amp; access</small></button>
+            <button class="pb-node pb-node--automation" type="button" data-ecosystem="automation" aria-pressed="false"><span class="pb-node__icon">⟲</span><strong>Automation</strong><small>Tasks &amp; integrations</small></button>
+            <button class="pb-node pb-node--infrastructure" type="button" data-ecosystem="infrastructure" aria-pressed="false"><span class="pb-node__icon">▤</span><strong>Infrastructure</strong><small>Servers &amp; data</small></button>
+            <span class="pb-ecosystem__map-note">ILLUSTRATIVE SYSTEM MAP · SELECT A NODE</span>
+          </div>
+          <aside class="pb-ecosystem__detail" aria-live="polite">
+            <p class="pb-eyebrow">HOW THE PARTS CONNECT</p><span class="pb-ecosystem__detail-index" id="pbEcosystemIndex">01 / 04</span>
+            <h3 id="pbEcosystemTitle">Business systems</h3>
+            <p id="pbEcosystemText">Organize everyday work in one place—from records and transactions to useful reports and clear workflows.</p>
+            <div class="pb-ecosystem__detail-tags" id="pbEcosystemTags"><span>Operations</span><span>Records</span><span>Visibility</span></div>
+            <p class="pb-ecosystem__detail-foot">A conceptual illustration of possible service components, not a live system connection.</p>
+          </aside>
+        </div>
+        <div class="pb-journey">
+          <div class="pb-journey__head"><p class="pb-eyebrow">A REQUEST, THROUGH THE SYSTEM</p><span>CONCEPTUAL DATA JOURNEY</span></div>
+          <div class="pb-journey__flow" aria-label="Conceptual data journey: device, network, application, response">
+            <div class="pb-journey__step"><span>01</span><strong>Device</strong><small>A person makes a request</small></div><i aria-hidden="true"></i>
+            <div class="pb-journey__step"><span>02</span><strong>Network</strong><small>Information is routed</small></div><i aria-hidden="true"></i>
+            <div class="pb-journey__step"><span>03</span><strong>Application</strong><small>Business logic runs</small></div><i aria-hidden="true"></i>
+            <div class="pb-journey__step"><span>04</span><strong>Response</strong><small>A useful result returns</small></div>
+          </div>
+        </div>
+      </div>
+    </section>
+
     <!-- ============================== Services ============================== -->
     <section class="section section--alt" id="services">
       <div class="container">
         <header class="section-head">
           <div class="section-head__meta">
-            <span class="section-head__num">(02)</span>
+            <span class="section-head__num">(03)</span>
             <span class="section-head__label">Services</span>
           </div>
           <h2 class="section-head__title">Solutions for <em class="serif">real work</em></h2>
@@ -396,7 +449,7 @@
       <div class="container">
         <header class="section-head">
           <div class="section-head__meta">
-            <span class="section-head__num">(03)</span><span class="section-head__label">How We Work</span>
+            <span class="section-head__num">(04)</span><span class="section-head__label">How We Work</span>
           </div>
           <h2 class="section-head__title">A clear path from idea <em class="serif">to solution</em></h2>
         </header>
@@ -415,7 +468,7 @@
       <div class="container contact">
         <div class="section-head section-head--center">
           <div class="section-head__meta">
-            <span class="section-head__num">(04)</span>
+            <span class="section-head__num">(05)</span>
             <span class="section-head__label">Contact</span>
           </div>
         </div>
@@ -565,5 +618,6 @@
   </div>
 
   <script src="script.js"></script>
+  <script src="visual-experience.js"></script>
 </body>
 </html>
