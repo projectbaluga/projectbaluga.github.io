@@ -9,6 +9,121 @@
   const root = document.documentElement;
 
   // ----------------------------------------------------------
+  //  Generative topography — lightweight canvas background
+  // ----------------------------------------------------------
+  (function initTopography() {
+    const canvas = document.getElementById("topographyCanvas");
+    if (!canvas) return;
+    const ctx = canvas.getContext("2d", { alpha: true });
+    if (!ctx) return;
+
+    const reduceMotion = window.matchMedia("(prefers-reduced-motion: reduce)");
+    const coarsePointer = window.matchMedia("(pointer: coarse)");
+    let width = 0;
+    let height = 0;
+    let dpr = 1;
+    let frame = 0;
+    let phase = 0;
+    let lastTime = 0;
+    let running = false;
+
+    function resize() {
+      dpr = Math.min(window.devicePixelRatio || 1, 1.5);
+      width = window.innerWidth;
+      height = window.innerHeight;
+      canvas.width = Math.round(width * dpr);
+      canvas.height = Math.round(height * dpr);
+      ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+      draw();
+    }
+
+    function draw() {
+      ctx.clearRect(0, 0, width, height);
+      const isLight = root.getAttribute("data-theme") === "light";
+      const lineCount = width < 700 ? 15 : 25;
+      const step = width < 700 ? 18 : 15;
+      const baseGap = Math.max(23, height / (lineCount + 2));
+      const ink = isLight ? "72, 86, 111" : "151, 166, 193";
+      const accent = isLight ? "91, 77, 238" : "139, 125, 255";
+
+      ctx.lineWidth = width < 700 ? 0.8 : 0.95;
+      for (let line = 0; line < lineCount; line++) {
+        const centerY = height * 0.12 + line * baseGap;
+        const strength = 0.35 + (Math.sin(line * 0.71) + 1) * 0.18;
+        ctx.beginPath();
+
+        for (let x = -step; x <= width + step; x += step) {
+          const nx = x / Math.max(width, 1);
+          const broad = Math.sin(nx * 5.1 + line * 0.19 + phase) * 18;
+          const fine = Math.sin(nx * 11.4 - line * 0.31 + phase * 0.62) * 6;
+          const bend = Math.cos(nx * 2.7 + phase * 0.38) * 13;
+          const y = centerY + broad + fine + bend;
+          if (x === -step) ctx.moveTo(x, y);
+          else ctx.lineTo(x, y);
+        }
+
+        const isAccentLine = line % 8 === 3;
+        ctx.strokeStyle = isAccentLine
+          ? `rgba(${accent}, ${strength * (isLight ? 0.105 : 0.13)})`
+          : `rgba(${ink}, ${strength * (isLight ? 0.075 : 0.095)})`;
+        ctx.stroke();
+      }
+
+      // A restrained focal contour near the hero's right edge.
+      const glow = ctx.createRadialGradient(width * 0.78, height * 0.28, 0, width * 0.78, height * 0.28, Math.max(width, height) * 0.48);
+      glow.addColorStop(0, isLight ? "rgba(91, 77, 238, 0.035)" : "rgba(139, 125, 255, 0.045)");
+      glow.addColorStop(1, "rgba(0, 0, 0, 0)");
+      ctx.fillStyle = glow;
+      ctx.fillRect(0, 0, width, height);
+    }
+
+    function animate(time) {
+      if (!running) return;
+      if (!lastTime || time - lastTime > 32) {
+        phase += 0.0018;
+        draw();
+        lastTime = time;
+      }
+      frame = window.requestAnimationFrame(animate);
+    }
+
+    function start() {
+      if (running || document.hidden || reduceMotion.matches) return;
+      running = true;
+      lastTime = 0;
+      frame = window.requestAnimationFrame(animate);
+    }
+
+    function stop() {
+      running = false;
+      if (frame) window.cancelAnimationFrame(frame);
+      frame = 0;
+    }
+
+    resize();
+    if (!reduceMotion.matches) start();
+
+    window.addEventListener("resize", resize, { passive: true });
+    document.addEventListener("visibilitychange", () => {
+      if (document.hidden) stop();
+      else start();
+    });
+    reduceMotion.addEventListener?.("change", () => {
+      if (reduceMotion.matches) {
+        stop();
+        draw();
+      } else {
+        start();
+      }
+    });
+
+    // Redraw after a theme switch so contour tones stay balanced.
+    const themeObserver = new MutationObserver(draw);
+    themeObserver.observe(root, { attributes: true, attributeFilter: ["data-theme"] });
+  })();
+
+
+  // ----------------------------------------------------------
   //  Theme toggle — with circular reveal via View Transitions
   // ----------------------------------------------------------
   const themeToggle = document.getElementById("themeToggle");
