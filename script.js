@@ -861,7 +861,7 @@
     function addMessage(content, kind, options = {}) {
       const bubble = document.createElement("div");
       bubble.className = "pb-assistant__message pb-assistant__message--" + kind;
-      const text = document.createElement("span");
+      const text = document.createElement(kind === "assistant" ? "div" : "span");
       text.className = "pb-assistant__message-text";
       text.textContent = content;
       bubble.appendChild(text);
@@ -875,12 +875,8 @@
         row.className = "pb-assistant__message-row pb-assistant__message-row--assistant";
         retireAvatars();
         row.appendChild(createMessageAvatar());
-        const stack = document.createElement("div");
-        stack.className = "pb-assistant__message-stack";
-        stack.appendChild(bubble);
-        row.appendChild(stack);
+        row.appendChild(bubble);
         messagesEl.appendChild(row);
-        bubble._pbMessageStack = stack;
       } else {
         messagesEl.appendChild(bubble);
       }
@@ -983,6 +979,7 @@
       messagesEl.replaceChildren();
       const greeting = getWelcomeGreeting();
       const welcomeBubble = addMessage(greeting.text, "assistant");
+      renderFormattedMessage(welcomeBubble.querySelector(".pb-assistant__message-text"), greeting.text);
       const welcomeAvatar = getLiveAvatar();
       if (welcomeAvatar) {
         welcomeAvatar.dataset.state = greeting.mascotState;
