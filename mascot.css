@@ -36,6 +36,14 @@
 .pb-assistant__message-avatar { transition: rotate .5s ease; }
 .pb-assistant__message-avatar.pb-listening { rotate: -5deg; }
 .pb-assistant__message-avatar.pb-nod { animation: pb-nod .32s ease-out; }
+/* Only the newest assistant avatar is alive; older ones stay still. */
+.pb-assistant__message-avatar.pb-alive {
+  transform-origin: 50% 92%;
+  animation: pb-breathe 4.2s ease-in-out infinite;
+}
+.pb-assistant__message-avatar.pb-alive.pb-nod {
+  animation: pb-breathe 4.2s ease-in-out infinite, pb-nod .32s ease-out;
+}
 @keyframes pb-nod {
   0%   { translate: 0 0; }
   40%  { translate: 0 2px; }
@@ -74,6 +82,8 @@ body.pb-assistant-open .pb-mascot-hint { display: none; }
   }
   .pb-assistant__message-avatar,
   .pb-assistant__message-avatar.pb-listening,
-  .pb-assistant__message-avatar.pb-nod { animation: none !important; transition: none; rotate: none; }
+  .pb-assistant__message-avatar.pb-nod,
+  .pb-assistant__message-avatar.pb-alive,
+  .pb-assistant__message-avatar.pb-alive.pb-nod { animation: none !important; transition: none; rotate: none; }
   .pb-mascot__layer, .pb-mascot-hint { transition: none; }
 }

@@ -38,7 +38,7 @@ The optional ProjectBaluga AI assistant uses a Cloudflare Worker backend. See `c
 
 The assistant's character (`assets/mascot-expressions.svg`, six expressions: `idle`, `thinking`, `responding`, `success`, `error`, `offline`) is driven by `mascot.js` and styled in `mascot.css`.
 
-- **Idle life** – breathing, blinking, small head tilts, and an occasional curious or cheerful look.
+- **Idle life** – breathing, blinking, small head tilts, and an occasional curious or cheerful look. The newest assistant avatar in the chat breathes and blinks as well; older messages stay still.
 - **Pointer / touch** – leans toward the cursor, a touch, or the feature card being hovered.
 - **Chat** – nods while the visitor types, shows concern for messages about problems (and stays calm afterwards instead of celebrating), and smiles at greetings and thanks (English and Filipino keywords live in `classifyMessage`).
 - **Page** – reacts when sections scroll into view, shows at most two short hint bubbles per session, and waves once on a first visit (remembered in `localStorage`; nothing is stored if storage is blocked).

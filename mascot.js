@@ -138,7 +138,7 @@
     const messagesEl = document.getElementById("pbAssistantMessages");
     const rm = root.matchMedia ? root.matchMedia("(prefers-reduced-motion: reduce)") : { matches: false };
     reduced.matches = rm.matches;
-    if (rm.addEventListener) rm.addEventListener("change", () => { reduced.matches = rm.matches; kick(); });
+    if (rm.addEventListener) rm.addEventListener("change", () => { reduced.matches = rm.matches; markLatestAvatar(); kick(); });
 
     const random = Math.random;
     const timers = {};
@@ -376,6 +376,30 @@
       later("mood", typedMood, 550);
     });
 
+    // ---- the newest chat avatar breathes and blinks too ----------------------
+    function markLatestAvatar() {
+      if (!messagesEl) return;
+      const list = messagesEl.querySelectorAll(".pb-assistant__message-avatar");
+      list.forEach((el, i) => el.classList.toggle("pb-alive", !rm.matches && i === list.length - 1));
+    }
+    if (messagesEl) new MutationObserver(markLatestAvatar).observe(messagesEl, { childList: true });
+    markLatestAvatar();
+    function chatBlinkLoop() {
+      later("chatBlink", () => {
+        const avatar = panelOpen && !rm.matches && !document.hidden && chatState !== "offline" ? lastAvatar() : null;
+        const svg = avatar && avatar.querySelector("svg");
+        const prev = svg && currentState(svg);
+        if (prev === "idle" || prev === "thinking" || prev === "responding" || prev === "error") {
+          express(svg, "offline", true);
+          later("chatUnblink", () => {
+            // Only undo our own blink: if anything changed the face meanwhile, leave it alone.
+            if (chatState !== "offline" && currentState(svg) === "offline") express(svg, prev, true);
+          }, 120 + random() * 50);
+        }
+        chatBlinkLoop();
+      }, nextBlinkDelay(random));
+    }
+
     // ---- hooks used by script.js --------------------------------------------
     function chatSvgs() {
       const avatar = lastAvatar();
@@ -423,6 +447,7 @@
     launcher.addEventListener("click", () => { interacted = true; hideHint(); });
 
     blinkLoop();
+    chatBlinkLoop();
     flairLoop();
     greetFirstVisit();
   }
