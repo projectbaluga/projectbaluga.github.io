@@ -889,26 +889,75 @@
       messagesEl.scrollTop = messagesEl.scrollHeight;
       return bubble;
     }
-    function renderAssistantResponse(firstBubble, content) {
-      const paragraphs = String(content).split(/\n\s*\n/).map((part) => part.trim()).filter(Boolean);
-      const parts = paragraphs.length ? paragraphs : [String(content)];
-      const firstText = firstBubble.querySelector(".pb-assistant__message-text");
-      firstText.textContent = parts[0];
-      firstBubble.classList.remove("pb-assistant__message--pending");
-      firstBubble.removeAttribute("aria-label");
-      const stack = firstBubble._pbMessageStack;
-      let lastBubble = firstBubble;
-      parts.slice(1).forEach((part) => {
-        const nextBubble = document.createElement("div");
-        nextBubble.className = "pb-assistant__message pb-assistant__message--assistant";
-        const nextText = document.createElement("span");
-        nextText.className = "pb-assistant__message-text";
-        nextText.textContent = part;
-        nextBubble.appendChild(nextText);
-        stack.appendChild(nextBubble);
-        lastBubble = nextBubble;
+    // Render a safe Markdown subset with DOM nodes; model output is never injected as HTML.
+    function appendFormattedInline(parent, value) {
+      const pattern = /\*\*([^*]+)\*\*/g;
+      let cursor = 0;
+      String(value).replace(pattern, (match, boldText, offset) => {
+        if (offset > cursor) parent.appendChild(document.createTextNode(value.slice(cursor, offset)));
+        const strong = document.createElement("strong");
+        strong.textContent = boldText;
+        parent.appendChild(strong);
+        cursor = offset + match.length;
+        return match;
       });
-      addCopyAction(lastBubble, content);
+      if (cursor < value.length) parent.appendChild(document.createTextNode(value.slice(cursor)));
+    }
+
+    function renderFormattedMessage(target, content) {
+      target.replaceChildren();
+      const lines = String(content).replace(/\r\n?/g, "\n").split("\n");
+      let paragraph = [];
+      let list = null;
+      let listType = "";
+      function flushParagraph() {
+        if (!paragraph.length) return;
+        const p = document.createElement("p");
+        appendFormattedInline(p, paragraph.join(" "));
+        target.appendChild(p);
+        paragraph = [];
+      }
+      function flushList() {
+        if (!list) return;
+        target.appendChild(list);
+        list = null;
+        listType = "";
+      }
+      function addListItem(type, value) {
+        flushParagraph();
+        if (!list || listType !== type) {
+          flushList();
+          listType = type;
+          list = document.createElement(type === "ordered" ? "ol" : "ul");
+        }
+        const item = document.createElement("li");
+        appendFormattedInline(item, value);
+        list.appendChild(item);
+      }
+      lines.forEach((rawLine) => {
+        const line = rawLine.trim();
+        if (!line) { flushParagraph(); flushList(); return; }
+        const heading = line.match(/^#{1,3}\s+(.+)$/);
+        const bullet = line.match(/^[-*•]\s+(.+)$/);
+        const numbered = line.match(/^\d+[.)]\s+(.+)$/);
+        if (heading) {
+          flushParagraph(); flushList();
+          const h = document.createElement("h4");
+          appendFormattedInline(h, heading[1]);
+          target.appendChild(h);
+        } else if (bullet) addListItem("unordered", bullet[1]);
+        else if (numbered) addListItem("ordered", numbered[1]);
+        else { flushList(); paragraph.push(line); }
+      });
+      flushParagraph();
+      flushList();
+    }
+
+    function renderAssistantResponse(bubble, content) {
+      renderFormattedMessage(bubble.querySelector(".pb-assistant__message-text"), content);
+      bubble.classList.remove("pb-assistant__message--pending");
+      bubble.removeAttribute("aria-label");
+      addCopyAction(bubble, content);
       messagesEl.scrollTop = messagesEl.scrollHeight;
     }
     function getWelcomeGreeting() {
