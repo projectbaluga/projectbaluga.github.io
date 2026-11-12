@@ -755,6 +755,23 @@
       useElement.setAttribute("href", "assets/mascot-expressions.svg#" + expression);
     }
 
+    // Only the newest assistant message shows the mascot; it moves along with the conversation.
+    function getLiveAvatar() {
+      const list = messagesEl.querySelectorAll(".pb-assistant__message-row:not(.is-history) .pb-assistant__message-avatar");
+      return list.length ? list[list.length - 1] : null;
+    }
+    function retireAvatars() {
+      messagesEl.querySelectorAll(".pb-assistant__message-row:not(.is-history)").forEach((row) => {
+        row.classList.add("is-history");
+        const avatar = row.querySelector(".pb-assistant__message-avatar");
+        if (avatar) {
+          avatar.className = "pb-assistant__message-avatar";
+          avatar.removeAttribute("data-state");
+          avatar.replaceChildren();
+        }
+      });
+    }
+
     function setCharacterState(state, label, transition) {
       if (stateTimer) {
         window.clearTimeout(stateTimer);
@@ -763,7 +780,7 @@
       const safeState = mascotExpressions[state] ? state : "idle";
       if (characterStatus) characterStatus.textContent = label || "Ready to help";
       if (launcher) launcher.dataset.state = safeState;
-      const activeMessageAvatar = messagesEl.querySelector(".pb-assistant__message-row:last-of-type .pb-assistant__message-avatar");
+      const activeMessageAvatar = getLiveAvatar();
       if (activeMessageAvatar) {
         activeMessageAvatar.dataset.state = safeState;
         setExpression(activeMessageAvatar.querySelector("use"), safeState);
@@ -791,7 +808,7 @@
       document.body.classList.add("pb-assistant-open");
       setAvailableState();
       if (!history.length) {
-        const welcomeAvatar = messagesEl.querySelector(".pb-assistant__message-avatar");
+        const welcomeAvatar = getLiveAvatar();
         const greeting = getWelcomeGreeting();
         if (welcomeAvatar) {
           welcomeAvatar.dataset.state = greeting.mascotState;
@@ -856,6 +873,7 @@
       if (kind === "assistant") {
         const row = document.createElement("div");
         row.className = "pb-assistant__message-row pb-assistant__message-row--assistant";
+        retireAvatars();
         row.appendChild(createMessageAvatar());
         const stack = document.createElement("div");
         stack.className = "pb-assistant__message-stack";
@@ -916,7 +934,7 @@
       messagesEl.replaceChildren();
       const greeting = getWelcomeGreeting();
       const welcomeBubble = addMessage(greeting.text, "assistant");
-      const welcomeAvatar = messagesEl.querySelector(".pb-assistant__message-avatar");
+      const welcomeAvatar = getLiveAvatar();
       if (welcomeAvatar) {
         welcomeAvatar.dataset.state = greeting.mascotState;
         setExpression(welcomeAvatar.querySelector("use"), greeting.mascotState);

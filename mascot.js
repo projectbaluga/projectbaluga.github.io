@@ -344,8 +344,9 @@
     }
 
     // ---- listening while the visitor types ----------------------------------
+    // The single live mascot: the avatar of the newest assistant message.
     function lastAvatar() {
-      const list = messagesEl ? messagesEl.querySelectorAll(".pb-assistant__message-avatar") : [];
+      const list = messagesEl ? messagesEl.querySelectorAll(".pb-assistant__message-row:not(.is-history) .pb-assistant__message-avatar") : [];
       return list.length ? list[list.length - 1] : null;
     }
     const typingOK = () => panelOpen && (chatState === "idle" || chatState === "success" || chatState === "error");
@@ -379,8 +380,8 @@
     // ---- the newest chat avatar breathes and blinks too ----------------------
     function markLatestAvatar() {
       if (!messagesEl) return;
-      const list = messagesEl.querySelectorAll(".pb-assistant__message-avatar");
-      list.forEach((el, i) => el.classList.toggle("pb-alive", !rm.matches && i === list.length - 1));
+      const live = lastAvatar();
+      messagesEl.querySelectorAll(".pb-assistant__message-avatar").forEach((el) => el.classList.toggle("pb-alive", !rm.matches && el === live));
     }
     if (messagesEl) new MutationObserver(markLatestAvatar).observe(messagesEl, { childList: true });
     markLatestAvatar();

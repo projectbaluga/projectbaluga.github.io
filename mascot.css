@@ -36,7 +36,9 @@
 .pb-assistant__message-avatar { transition: rotate .5s ease; }
 .pb-assistant__message-avatar.pb-listening { rotate: -5deg; }
 .pb-assistant__message-avatar.pb-nod { animation: pb-nod .32s ease-out; }
-/* Only the newest assistant avatar is alive; older ones stay still. */
+/* Only the newest assistant message shows the mascot. Older rows keep an empty gutter so bubbles stay aligned. */
+.pb-assistant__message-row.is-history .pb-assistant__message-avatar { visibility: hidden; }
+/* The mascot itself is alive: it breathes (and blinks via mascot.js). */
 .pb-assistant__message-avatar.pb-alive {
   transform-origin: 50% 92%;
   animation: pb-breathe 4.2s ease-in-out infinite;
