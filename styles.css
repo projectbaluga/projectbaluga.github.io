@@ -2790,8 +2790,8 @@ body.recommend-open { overflow: hidden; }
   position: absolute; right: 3px; bottom: 3px; width: 11px; height: 11px;
   border: 2px solid var(--surface); border-radius: 50%; background: var(--accent-2);
 }
-.pb-assistant__avatar[data-state="thinking"] img { animation: pb-mascot-think 1.15s ease-in-out infinite; }
-.pb-assistant__avatar[data-state="ready"] img { animation: pb-mascot-pop .42s ease-out; }
+.pb-assistant__avatar[data-state="thinking"] .pb-assistant__mascot { animation: pb-mascot-think 1.15s ease-in-out infinite; }
+.pb-assistant__avatar[data-state="success"] .pb-assistant__mascot { animation: pb-mascot-pop .42s ease-out; }
 .pb-assistant__avatar[data-state="error"] { border-color: var(--accent-3); }
 .pb-assistant__avatar[data-state="error"] .pb-assistant__avatar-pulse { background: var(--accent-3); }
 .pb-assistant__launcher-avatar {
@@ -2804,7 +2804,7 @@ body.recommend-open { overflow: hidden; }
   display: block; width: 100%; height: 100%; max-width: 100%; max-height: 100%;
   object-fit: contain; box-sizing: border-box;
 }
-.pb-assistant__launcher[data-state="thinking"] .pb-assistant__launcher-avatar img { animation: pb-mascot-think 1.15s ease-in-out infinite; }
+.pb-assistant__launcher[data-state="thinking"] .pb-assistant__mascot { animation: pb-mascot-think 1.15s ease-in-out infinite; }
 @keyframes pb-mascot-think { 0%,100% { transform: translateY(0) rotate(0); } 35% { transform: translateY(-3px) rotate(-4deg); } 70% { transform: translateY(1px) rotate(3deg); } }
 @keyframes pb-mascot-pop { 0% { transform: scale(.88); } 65% { transform: scale(1.08); } 100% { transform: scale(1); } }
 @media (max-width: 420px) {
@@ -2816,7 +2816,7 @@ body.recommend-open { overflow: hidden; }
   .pb-assistant__character-status { font-size: .68rem; }
 }
 @media (prefers-reduced-motion: reduce) {
-  .pb-assistant__avatar img, .pb-assistant__launcher-avatar img { animation: none !important; }
+  .pb-assistant__mascot { animation: none !important; }
 }
 
 
