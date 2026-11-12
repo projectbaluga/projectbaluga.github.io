@@ -4,6 +4,7 @@ import worker from "../cloudflare/worker.js";
 
 const endpoint = "https://projectbaluga-ai-assistant.example.workers.dev/api/chat";
 const allowedOrigin = "https://projectbaluga.github.io";
+const customDomainOrigin = "https://wiltek.cloud";
 
 function makeRequest(payload, headers = {}) {
   return new Request(endpoint, {
@@ -136,4 +137,27 @@ test("preflight responds only for an allowed website origin", async () => {
   assert.equal(allowed.status, 204);
   assert.equal(allowed.headers.get("Access-Control-Allow-Origin"), allowedOrigin);
   assert.equal(denied.status, 403);
+});
+
+test("accepts chat requests from the production custom domain", async () => {
+  const env = makeEnv();
+  const response = await worker.fetch(
+    makeRequest(validPayload, { Origin: customDomainOrigin }),
+    env
+  );
+
+  assert.equal(response.status, 200);
+  assert.equal(response.headers.get("Access-Control-Allow-Origin"), customDomainOrigin);
+  assert.equal(env.calls.ai, 1);
+});
+
+test("allows CORS preflight from the production custom domain", async () => {
+  const response = await worker.fetch(new Request(endpoint, {
+    method: "OPTIONS",
+    headers: { Origin: customDomainOrigin }
+  }), makeEnv());
+
+  assert.equal(response.status, 204);
+  assert.equal(response.headers.get("Access-Control-Allow-Origin"), customDomainOrigin);
+  assert.equal(response.headers.get("Access-Control-Allow-Methods"), "POST, OPTIONS");
 });

@@ -4,6 +4,7 @@
  */
 const ALLOWED_ORIGINS = new Set([
   "https://projectbaluga.github.io",
+  "https://wiltek.cloud",
   "http://localhost:8787",
   "http://127.0.0.1:8787"
 ]);
