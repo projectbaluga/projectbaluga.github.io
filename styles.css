@@ -3426,3 +3426,14 @@ html[data-background-section="projects"] .topography-canvas {
   .pb-assistant__message-row { animation: none; }
   .pb-assistant__message-avatar .pb-assistant__mascot { animation: none !important; }
 }
+
+
+/* Transparent mascot treatment: keep the existing character, remove its backdrop. */
+.pb-assistant__message-avatar,
+.pb-assistant__launcher-avatar {
+  background: transparent !important;
+  border: 0 !important;
+  box-shadow: none !important;
+  border-radius: 0 !important;
+  overflow: visible;
+}
