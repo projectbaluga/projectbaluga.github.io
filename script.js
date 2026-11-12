@@ -975,7 +975,7 @@
           .filter((entry) => entry.role === "user")
           .map((entry) => entry.content.trim())
           .filter(Boolean);
-        const draft = ["Notes from your chat:", ...visitorNotes.map((note) => "- " + note)].join("\\n");
+        const draft = ["Notes from your chat:", ...visitorNotes.map((note) => "- " + note)].join("\n");
         details.value = draft.slice(0, 2000);
         details.dispatchEvent(new Event("input", { bubbles: true }));
         trigger.click();
