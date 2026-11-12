@@ -956,6 +956,34 @@
       addCopyAction(bubble, content);
       messagesEl.scrollTop = messagesEl.scrollHeight;
     }
+
+    // Prepare a draft from visitor-written chat messages; never submit automatically.
+    function addInquiryDraftAction(bubble) {
+      const action = document.createElement("button");
+      action.type = "button";
+      action.className = "btn btn--ghost btn--sm pb-assistant__inquiry-action";
+      action.textContent = "Review & Send Inquiry";
+      action.addEventListener("click", () => {
+        const form = document.getElementById("inquiryForm");
+        const details = form && form.querySelector('[name="details"]');
+        const trigger = document.querySelector("[data-inquiry-open]");
+        if (!form || !details || !trigger) {
+          setStatus("The inquiry form is unavailable. Please use the Contact section instead.");
+          return;
+        }
+        const visitorNotes = history
+          .filter((entry) => entry.role === "user")
+          .map((entry) => entry.content.trim())
+          .filter(Boolean);
+        const draft = ["Notes from your chat:", ...visitorNotes.map((note) => "- " + note)].join("\n");
+        details.value = draft.slice(0, 2000);
+        details.dispatchEvent(new Event("input", { bubbles: true }));
+        trigger.click();
+        setStatus("Your inquiry draft is ready to review. Check the details, complete your name and email, then submit it when ready. Nothing has been sent yet.");
+        details.focus({ preventScroll: true });
+      });
+      bubble.appendChild(action);
+    }
     function getWelcomeGreeting() {
       const hour = new Date().getHours();
       if (hour >= 6 && hour < 12) {
@@ -1057,6 +1085,7 @@
         const answer = typeof payload.reply === "string" ? payload.reply.trim() : "";
         if (!answer) throw new Error("The assistant returned an empty response. Please try again.");
         renderAssistantResponse(pending, answer);
+        addInquiryDraftAction(pending);
         history.push({ role: "assistant", content: answer });
         if (history.length > maxHistory) history.splice(0, history.length - maxHistory);
         setStatus("");
