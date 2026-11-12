@@ -683,7 +683,6 @@
       payload.set("_subject", "New ProjectBaluga inquiry");
       payload.set("_replyto", String(payload.get("email") || ""));
       payload.set("_url", window.location.href);
-      payload.set("_honey", "");
 
       try {
         const response = await fetch("https://formsubmit.co/ajax/projectbaluga@gmail.com", {

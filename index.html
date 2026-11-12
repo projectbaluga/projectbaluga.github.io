@@ -175,6 +175,7 @@
         <button type="button" class="inquiry-close" aria-label="Close inquiry form" data-inquiry-close>&times;</button>
       </div>
       <form id="inquiryForm" class="inquiry-form">
+        <input type="text" name="_honey" tabindex="-1" autocomplete="off" aria-hidden="true" style="display:none" />
         <div class="inquiry-form__grid">
           <label class="inquiry-field">Your name <span>*</span>
             <input name="name" type="text" autocomplete="name" maxlength="100" required placeholder="e.g. Juan Dela Cruz" />
@@ -221,7 +222,7 @@
             </select>
           </label>
         </div>
-        <p class="inquiry-note">Your inquiry will be securely sent through FormSubmit to ProjectBaluga. By submitting, you agree to share these details for the purpose of responding to your request. Please do not include passwords or sensitive financial information.</p>
+        <p class="inquiry-note">Your details will be sent through FormSubmit, a third-party form delivery service, and forwarded to ProjectBaluga so we can respond to your inquiry. Please share only information needed for your request. Do not include passwords, payment details, or confidential business information. See our <a href="privacy.html" target="_blank" rel="noopener noreferrer">Privacy Notice</a> for details.</p>
         <p class="inquiry-status" id="inquiryStatus" role="status" aria-live="polite" hidden></p>
         <div class="inquiry-form__actions">
           <button type="button" class="btn btn--ghost" data-inquiry-close>Cancel</button>
@@ -556,7 +557,7 @@
       </div>
 
       <div class="footer__bottom">
-        <p>© <span id="year"></span> Wilson Villanueva</p>
+        <p>© <span id="year"></span> Wilson Villanueva <span aria-hidden="true">·</span> <a href="privacy.html">Privacy Notice</a></p>
         <button class="icon-btn" id="backToTop" aria-label="Back to top" data-magnetic>
           <svg class="icon" aria-hidden="true"><use href="#i-arrow-up"/></svg>
         </button>
