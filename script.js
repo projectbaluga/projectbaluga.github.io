@@ -758,10 +758,11 @@
       const safeState = mascotExpressions[state] ? state : "idle";
       if (characterStatus) characterStatus.textContent = label || "Ready to help";
       if (launcher) launcher.dataset.state = safeState;
-      messagesEl.querySelectorAll(".pb-assistant__message-avatar").forEach((messageAvatar) => {
-        messageAvatar.dataset.state = safeState;
-        setExpression(messageAvatar.querySelector("use"), safeState);
-      });
+      const activeMessageAvatar = messagesEl.querySelector(".pb-assistant__message-row:last-of-type .pb-assistant__message-avatar");
+      if (activeMessageAvatar) {
+        activeMessageAvatar.dataset.state = safeState;
+        setExpression(activeMessageAvatar.querySelector("use"), safeState);
+      }
       setExpression(launcherUse, safeState);
 
       if (transition && mascotExpressions[transition.state]) {
