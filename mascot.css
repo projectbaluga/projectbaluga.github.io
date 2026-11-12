@@ -1,7 +1,7 @@
 /* ProjectBaluga smart mascot — loaded after styles.css so these rules win. */
 
 /* Expression crossfade (two stacked <use> layers, managed by mascot.js) */
-.pb-mascot__layer { opacity: 0; transition: opacity .16s ease; }
+.pb-mascot__layer { opacity: 0; transition: opacity .26s cubic-bezier(0.33, 1, 0.68, 1); }
 .pb-mascot__layer.is-on { opacity: 1; }
 .pb-assistant__mascot.is-instant .pb-mascot__layer { transition: none; }
 
@@ -60,37 +60,37 @@
 :where(.pb-assistant) .pb-assistant__launcher-avatar .pb-assistant__mascot {
   transform: translate(var(--pb-lx, 0px), var(--pb-ly, 0px)) rotate(var(--pb-lr, 0deg));
   rotate: calc(var(--pb-tilt, 0) * 1deg);
-  transition: rotate .9s ease;
-  animation: pb-breathe-badge 4.2s ease-in-out infinite;
+  transition: rotate 1.35s cubic-bezier(0.33, 1, 0.68, 1);
+  animation: pb-breathe-badge 5.6s cubic-bezier(0.45, 0.05, 0.55, 0.95) infinite;
 }
-.pb-assistant__launcher-avatar.pb-wave .pb-assistant__mascot { animation: pb-wave-badge 1.6s ease-in-out 1; }
+.pb-assistant__launcher-avatar.pb-wave .pb-assistant__mascot { animation: pb-wave-badge 1.85s cubic-bezier(0.33, 1, 0.68, 1) 1; }
 
 /* Chat motion: the single live mascot breathes, nods while the visitor types, and tilts to listen. */
-.pb-assistant__message-avatar .pb-assistant__mascot { transition: rotate .5s ease; }
-.pb-assistant__message-avatar:where(.pb-alive) .pb-assistant__mascot { animation: pb-breathe-badge 4.2s ease-in-out infinite; }
+.pb-assistant__message-avatar .pb-assistant__mascot { transition: rotate .7s cubic-bezier(0.33, 1, 0.68, 1); }
+.pb-assistant__message-avatar:where(.pb-alive) .pb-assistant__mascot { animation: pb-breathe-badge 5.6s cubic-bezier(0.45, 0.05, 0.55, 0.95) infinite; }
 .pb-assistant__message-avatar.pb-alive.pb-nod .pb-assistant__mascot {
-  animation: pb-breathe-badge 4.2s ease-in-out infinite, pb-nod .32s ease-out;
+  animation: pb-breathe-badge 5.6s cubic-bezier(0.45, 0.05, 0.55, 0.95) infinite, pb-nod .48s cubic-bezier(0.33, 1, 0.68, 1);
 }
-.pb-assistant__message-avatar.pb-listening .pb-assistant__mascot { rotate: -6deg; }
+.pb-assistant__message-avatar.pb-listening .pb-assistant__mascot { rotate: -4.5deg; }
 
 /* Only the newest assistant message shows the mascot. Older rows keep an empty gutter so bubbles stay aligned. */
 .pb-assistant__message-row.is-history .pb-assistant__message-avatar { visibility: hidden; }
 
 @keyframes pb-breathe-badge {
   0%, 100% { scale: 1; }
-  50% { scale: 1.02 1.035; }
+  50% { scale: 1.012 1.022; }
 }
 @keyframes pb-wave-badge {
-  0%   { rotate: 0deg;  translate: 0 0; }
-  15%  { rotate: 8deg;  translate: 0 -1.5px; }
-  32%  { rotate: -6deg; translate: 0 0; }
-  50%  { rotate: 7deg;  translate: 0 -1px; }
-  68%  { rotate: -4deg; translate: 0 0; }
-  100% { rotate: 0deg;  translate: 0 0; }
+  0%   { rotate: 0deg;   translate: 0 0; }
+  18%  { rotate: 6deg;   translate: 0 -1.2px; }
+  36%  { rotate: -4.5deg; translate: 0 0; }
+  54%  { rotate: 5deg;   translate: 0 -0.8px; }
+  72%  { rotate: -2.5deg; translate: 0 0; }
+  100% { rotate: 0deg;   translate: 0 0; }
 }
 @keyframes pb-nod {
   0%   { translate: 0 0; }
-  40%  { translate: 0 1.5px; }
+  45%  { translate: 0 1.1px; }
   100% { translate: 0 0; }
 }
 
