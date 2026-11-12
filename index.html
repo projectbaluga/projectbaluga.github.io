@@ -569,14 +569,14 @@
   <!-- ProjectBaluga AI assistant (backend URL is configured after Cloudflare deployment) -->
   <div class="pb-assistant" id="pbAssistant" data-api-url="https://projectbaluga-ai-assistant.projectbaluga.workers.dev">
     <button class="pb-assistant__launcher" id="pbAssistantLauncher" type="button" aria-expanded="false" aria-controls="pbAssistantPanel" aria-label="Open ProjectBaluga AI assistant">
-      <span class="pb-assistant__launcher-avatar" aria-hidden="true"><img src="assets/favicon-512.png" alt="" /></span>
+      <span class="pb-assistant__launcher-avatar" aria-hidden="true"><svg class="pb-assistant__mascot" viewBox="0 0 96 96" focusable="false"><use href="assets/mascot-expressions.svg#idle"></use></svg></span>
       <span>Ask ProjectBaluga</span>
     </button>
     <section class="pb-assistant__panel" id="pbAssistantPanel" role="dialog" aria-modal="false" aria-labelledby="pbAssistantTitle" hidden>
       <header class="pb-assistant__header">
         <div class="pb-assistant__identity">
           <div class="pb-assistant__avatar" id="pbAssistantAvatar" data-state="idle">
-            <img src="assets/favicon-512.png" alt="ProjectBaluga mascot" />
+            <svg class="pb-assistant__mascot" viewBox="0 0 96 96" role="img" aria-label="ProjectBaluga mascot" focusable="false"><use href="assets/mascot-expressions.svg#idle"></use></svg>
             <span class="pb-assistant__avatar-pulse" aria-hidden="true"></span>
           </div>
           <div class="pb-assistant__identity-copy">
