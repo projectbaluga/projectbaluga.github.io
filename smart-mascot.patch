@@ -1,0 +1,708 @@
+diff --git a/README.md b/README.md
+index c5977f796667efb4fb9fbf88f3232c0bfa227d8d..d294c106630b2d98f1f28838bc0c5830a7752856 100644
+--- a/README.md
++++ b/README.md
+@@ -33,3 +33,15 @@ Open `index.html` in a browser, or serve the repository with any static file ser
+ ## AI assistant
+ 
+ The optional ProjectBaluga AI assistant uses a Cloudflare Worker backend. See `cloudflare/README.md` for deployment and configuration. The browser widget remains disconnected until its `data-api-url` is set to the deployed Worker origin.
++
++### Smart mascot
++
++The assistant's character (`assets/mascot-expressions.svg`, six expressions: `idle`, `thinking`, `responding`, `success`, `error`, `offline`) is driven by `mascot.js` and styled in `mascot.css`.
++
++- **Idle life** – breathing, blinking, small head tilts, and an occasional curious or cheerful look.
++- **Pointer / touch** – leans toward the cursor, a touch, or the feature card being hovered.
++- **Chat** – nods while the visitor types, shows concern for messages about problems (and stays calm afterwards instead of celebrating), and smiles at greetings and thanks (English and Filipino keywords live in `classifyMessage`).
++- **Page** – reacts when sections scroll into view, shows at most two short hint bubbles per session, and waves once on a first visit (remembered in `localStorage`; nothing is stored if storage is blocked).
++- **Accessibility** – all ambient motion, hints and the greeting are disabled under `prefers-reduced-motion`; hint bubbles are decorative (`aria-hidden`) and the chat itself is unchanged.
++
++`script.js` only reports chat state to the mascot through `window.PBMascot`; without `mascot.js` it falls back to plain expression swaps. Tests: `npm test`.
+diff --git a/index.html b/index.html
+index 0c2659d63033e3801b065692316951fb2b1de2f8..b06e97feae8fc8b319a7d34ee38d85f971944e70 100644
+--- a/index.html
++++ b/index.html
+@@ -30,6 +30,7 @@
+   <link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,300..800&family=Instrument+Serif:ital@0;1&family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet" />
+   <link rel="stylesheet" href="styles.css" />
+   <link rel="stylesheet" href="visual-experience.css" />
++  <link rel="stylesheet" href="mascot.css" />
+ 
+   <!-- Set the theme before first paint to avoid a flash -->
+   <script>
+@@ -613,6 +614,7 @@
+     <button class="lightbox__nav lightbox__nav--next" data-lb-next aria-label="Next">›</button>
+   </div>
+ 
++  <script src="mascot.js"></script>
+   <script src="script.js"></script>
+   <script src="visual-experience.js"></script>
+ </body>
+diff --git a/mascot.css b/mascot.css
+new file mode 100644
+index 0000000000000000000000000000000000000000..2b139b1f0e0721b232b2c7a27f2522abf7ba3eee
+--- /dev/null
++++ b/mascot.css
+@@ -0,0 +1,79 @@
++/* ProjectBaluga smart mascot — loaded after styles.css so these rules win. */
++
++/* Expression crossfade (two stacked <use> layers, managed by mascot.js) */
++.pb-mascot__layer { opacity: 0; transition: opacity .16s ease; }
++.pb-mascot__layer.is-on { opacity: 1; }
++.pb-assistant__mascot.is-instant .pb-mascot__layer { transition: none; }
++
++/* Launcher character: a little larger, and alive.
++   transform = lean (JS) · rotate = tilt / wave · scale = breathing · translate = nod */
++.pb-assistant__launcher-avatar {
++  width: 40px; height: 40px; min-width: 40px; max-width: 40px;
++  min-height: 40px; max-height: 40px; flex: 0 0 40px;
++  margin: -6px 0 -6px -4px;
++  transform: translate(var(--pb-lx, 0px), var(--pb-ly, 0px)) rotate(var(--pb-lr, 0deg));
++  rotate: calc(var(--pb-tilt, 0) * 1deg);
++  transform-origin: 50% 92%;
++  transition: rotate .9s ease;
++  animation: pb-breathe 4.2s ease-in-out infinite;
++}
++.pb-assistant__launcher-avatar.pb-wave { animation: pb-wave 1.6s ease-in-out 1; }
++@keyframes pb-breathe {
++  0%, 100% { scale: 1; }
++  50% { scale: 1.03 1.05; }
++}
++@keyframes pb-wave {
++  0%   { rotate: 0deg;   translate: 0 0; }
++  12%  { rotate: 14deg;  translate: 0 -3px; }
++  28%  { rotate: -10deg; translate: 0 0; }
++  44%  { rotate: 13deg;  translate: 0 -2px; }
++  60%  { rotate: -7deg;  translate: 0 0; }
++  78%  { rotate: 6deg;   translate: 0 -1px; }
++  100% { rotate: 0deg;   translate: 0 0; }
++}
++
++/* Listening while the visitor types (last assistant avatar inside the chat) */
++.pb-assistant__message-avatar { transition: rotate .5s ease; }
++.pb-assistant__message-avatar.pb-listening { rotate: -5deg; }
++.pb-assistant__message-avatar.pb-nod { animation: pb-nod .32s ease-out; }
++@keyframes pb-nod {
++  0%   { translate: 0 0; }
++  40%  { translate: 0 2px; }
++  100% { translate: 0 0; }
++}
++
++/* Speech bubble above the launcher */
++.pb-mascot-hint {
++  position: absolute; right: 0; bottom: calc(100% + 12px);
++  width: max-content; max-width: min(260px, calc(100vw - 2.5rem));
++  padding: .6rem .85rem;
++  border: 1px solid var(--border-2, #dbe3ef);
++  border-radius: 14px 14px 4px 14px;
++  background: var(--surface, #fff); color: var(--text, #14213d);
++  box-shadow: 0 10px 28px rgba(15, 35, 75, .18);
++  font: 500 .82rem/1.35 var(--font-body, Inter, sans-serif);
++  opacity: 0; transform: translateY(6px) scale(.98); pointer-events: none;
++  transition: opacity .22s ease, transform .22s ease;
++  cursor: pointer;
++}
++.pb-mascot-hint.is-visible { opacity: 1; transform: none; pointer-events: auto; }
++body.pb-assistant-open .pb-mascot-hint { display: none; }
++
++@media (max-width: 420px) {
++  .pb-assistant__launcher-avatar {
++    width: 36px; height: 36px; min-width: 36px; max-width: 36px;
++    min-height: 36px; max-height: 36px; flex-basis: 36px;
++  }
++}
++
++/* No ambient motion for people who ask for less of it */
++@media (prefers-reduced-motion: reduce) {
++  .pb-assistant__launcher-avatar,
++  .pb-assistant__launcher-avatar.pb-wave {
++    animation: none !important; transition: none; transform: none; rotate: none;
++  }
++  .pb-assistant__message-avatar,
++  .pb-assistant__message-avatar.pb-listening,
++  .pb-assistant__message-avatar.pb-nod { animation: none !important; transition: none; rotate: none; }
++  .pb-mascot__layer, .pb-mascot-hint { transition: none; }
++}
+diff --git a/mascot.js b/mascot.js
+new file mode 100644
+index 0000000000000000000000000000000000000000..4ed433535bdd40164e3d93f61bb52f9d40443276
+--- /dev/null
++++ b/mascot.js
+@@ -0,0 +1,433 @@
++/* ProjectBaluga smart mascot
++ * Drives assets/mascot-expressions.svg with:
++ *  - smooth expression crossfades (and instant swaps for blinking)
++ *  - idle life: breathing (CSS), blinking, small head tilts, occasional expressions
++ *  - cursor / touch awareness: leans toward the pointer or the feature being hovered
++ *  - chat awareness: listens while you type, reacts to the tone of your message
++ *  - page awareness: reacts to sections as you scroll, waves on the first visit
++ *
++ * script.js talks to this module through window.PBMascot (see bottom of the file).
++ * Everything proactive is switched off when prefers-reduced-motion is set.
++ */
++(function (root) {
++  "use strict";
++
++  const SPRITE = "assets/mascot-expressions.svg#";
++  const STATES = ["idle", "thinking", "responding", "success", "error", "offline"];
++
++  // ------------------------------------------------------------------
++  // Pure logic (no DOM) — covered by tests/mascot.test.js
++  // ------------------------------------------------------------------
++  const WORRIED = /\b(problem|problems|issue|issues|error|errors|broken|not working|doesn'?t work|won'?t work|down|slow|lag|laggy|stuck|failed|failing|urgent|hacked|virus|lost|crash(?:ed|ing)?|sira|sirang|problema|mabagal|nawala|naloko|ayaw|hindi gumagana|di gumagana|hindi na gumagana)\b/i;
++  const HAPPY = /\b(thanks?|thank you|salamat|great|awesome|nice|love it|good job|galing|ayos)\b/i;
++  const FRIENDLY = /^\s*(hi|hello|hey|good (morning|afternoon|evening)|kumusta|kamusta|musta|magandang (umaga|hapon|gabi))\b/i;
++
++  function classifyMessage(text) {
++    const value = String(text || "");
++    if (WORRIED.test(value)) return "worried";
++    if (HAPPY.test(value)) return "happy";
++    if (FRIENDLY.test(value)) return "friendly";
++    if (value.length > 220) return "attentive";
++    return "neutral";
++  }
++
++  // Expression shown while a message of this tone is being typed.
++  const TYPING_EXPRESSION = {
++    worried: "error", happy: "success", friendly: "responding", attentive: "thinking", neutral: "idle"
++  };
++  // Brief reaction when a message of this tone is sent (before the "thinking" pose).
++  const SEND_FLASH = { worried: "error", happy: "success", friendly: "responding" };
++
++  function afterResponseState(mood) {
++    // Stay calm and kind after a worried message; celebrate otherwise.
++    return mood === "worried" ? "idle" : "success";
++  }
++
++  const SECTIONS = {
++    about:      { expr: "thinking",   hint: "Curious how we work? Ask me anything." },
++    technology: { expr: "thinking",   hint: "Want this explained in plain words? I can help." },
++    services:   { expr: "responding", hint: "Not sure which service fits? Ask me." },
++    process:    { expr: "idle",       hint: null },
++    contact:    { expr: "success",    hint: "Ready when you are. Tell me what you need." }
++  };
++  function sectionReaction(id) {
++    return Object.prototype.hasOwnProperty.call(SECTIONS, id) ? SECTIONS[id] : null;
++  }
++
++  function computeLean(cx, cy, tx, ty) {
++    const dx = tx - cx, dy = ty - cy;
++    const dist = Math.hypot(dx, dy);
++    if (!dist) return { x: 0, y: 0 };
++    const strength = Math.max(0.35, Math.min(1, dist / 220));
++    return { x: (dx / dist) * strength, y: (dy / dist) * strength };
++  }
++
++  function nextBlinkDelay(random) { return 2600 + random() * 3800; }
++  function nextFlairDelay(random) { return 9000 + random() * 8000; }
++  function pickFlair(random, last) {
++    const options = ["thinking", "responding"].filter((name) => name !== last);
++    return options[Math.floor(random() * options.length)] || "thinking";
++  }
++
++  const logic = {
++    classifyMessage, afterResponseState, sectionReaction, computeLean,
++    nextBlinkDelay, nextFlairDelay, pickFlair,
++    TYPING_EXPRESSION, SEND_FLASH, STATES
++  };
++
++  // ------------------------------------------------------------------
++  // Expression layers: two stacked <use> elements for crossfading
++  // ------------------------------------------------------------------
++  const reduced = { matches: false };
++  function layersOf(svg) {
++    if (svg.__pbLayers) return svg.__pbLayers;
++    const first = svg.querySelector("use");
++    if (!first) return null;
++    const second = first.cloneNode(false);
++    first.classList.add("pb-mascot__layer", "is-on");
++    second.classList.add("pb-mascot__layer");
++    svg.appendChild(second);
++    const match = (first.getAttribute("href") || "").match(/#(\w+)$/);
++    svg.__pbLayers = { front: first, back: second, state: match ? match[1] : "idle" };
++    return svg.__pbLayers;
++  }
++
++  function express(svg, state, instant) {
++    if (!svg) return;
++    const next = STATES.indexOf(state) >= 0 ? state : "idle";
++    const layers = layersOf(svg);
++    if (!layers || layers.state === next) return;
++    layers.state = next;
++    const snap = instant || reduced.matches;
++    if (snap) svg.classList.add("is-instant");
++    layers.back.setAttribute("href", SPRITE + next);
++    layers.back.classList.add("is-on");
++    layers.front.classList.remove("is-on");
++    const swap = layers.front; layers.front = layers.back; layers.back = swap;
++    if (snap && root.requestAnimationFrame) {
++      root.requestAnimationFrame(() => root.requestAnimationFrame(() => svg.classList.remove("is-instant")));
++    }
++  }
++  function currentState(svg) {
++    const layers = svg && layersOf(svg);
++    return layers ? layers.state : null;
++  }
++
++  let earlyState = "idle";
++  const api = {
++    logic,
++    express,
++    setChatState: function (state) { earlyState = state; },
++    onUserMessage: function () { return "neutral"; },
++    afterResponseState: function () { return "success"; }
++  };
++  root.PBMascot = api;
++
++  if (typeof document === "undefined") return;
++
++  // ------------------------------------------------------------------
++  // Browser behaviour
++  // ------------------------------------------------------------------
++  function boot() {
++    const rootEl = document.getElementById("pbAssistant");
++    const launcher = document.getElementById("pbAssistantLauncher");
++    if (!rootEl || !launcher) return;
++    const avatarEl = launcher.querySelector(".pb-assistant__launcher-avatar");
++    const launcherSvg = avatarEl ? avatarEl.querySelector("svg") : null;
++    const input = document.getElementById("pbAssistantInput");
++    const messagesEl = document.getElementById("pbAssistantMessages");
++    const rm = root.matchMedia ? root.matchMedia("(prefers-reduced-motion: reduce)") : { matches: false };
++    reduced.matches = rm.matches;
++    if (rm.addEventListener) rm.addEventListener("change", () => { reduced.matches = rm.matches; kick(); });
++
++    const random = Math.random;
++    const timers = {};
++    function later(key, fn, ms) { clearTimeout(timers[key]); timers[key] = setTimeout(fn, ms); }
++    function cancel(key) { clearTimeout(timers[key]); delete timers[key]; }
++
++    let chatState = earlyState;
++    let lastMood = "neutral";
++    let panelOpen = document.body.classList.contains("pb-assistant-open");
++    let launcherHover = false, hoverExpr = null, sectionExpr = null, flairExpr = null, lastFlair = null;
++    let interacted = false;
++
++    const proactive = () => !rm.matches && !document.hidden && !panelOpen && chatState === "idle";
++
++    function refresh(instant) {
++      if (chatState !== "idle" || !launcherSvg) return;
++      const wanted = launcherHover ? "responding" : (hoverExpr || sectionExpr || flairExpr || "idle");
++      express(launcherSvg, wanted, instant);
++    }
++
++    // ---- storage helpers (private mode / blocked storage must never break the page)
++    function readStore(store, key) { try { return root[store].getItem(key); } catch (e) { return null; } }
++    function writeStore(store, key, value) { try { root[store].setItem(key, value); return true; } catch (e) { return false; } }
++
++    // ---- speech hint bubble --------------------------------------------------
++    const hintEl = document.createElement("div");
++    hintEl.className = "pb-mascot-hint";
++    hintEl.setAttribute("aria-hidden", "true");
++    hintEl.appendChild(document.createElement("span"));
++    rootEl.appendChild(hintEl);
++    let hintCount = parseInt(readStore("sessionStorage", "pbMascotHints") || "0", 10) || 0;
++    const MAX_HINTS = 2;
++    const hintVisible = () => hintEl.classList.contains("is-visible");
++    function hideHint() { hintEl.classList.remove("is-visible"); cancel("hintEnd"); }
++    function canHint() { return !interacted && hintCount < MAX_HINTS && !hintVisible() && proactive(); }
++    function showHint(text) {
++      hintEl.firstChild.textContent = text;
++      hintEl.classList.add("is-visible");
++      hintCount += 1;
++      writeStore("sessionStorage", "pbMascotHints", String(hintCount));
++      later("hintEnd", hideHint, 6500);
++    }
++    hintEl.addEventListener("click", () => { hideHint(); launcher.click(); });
++
++    // ---- idle life: blinking + occasional expression and head tilt ----------
++    function blinkLoop() {
++      later("blink", () => {
++        if (launcherSvg && proactive()) {
++          const state = currentState(launcherSvg);
++          if (state === "idle" || state === "responding" || state === "thinking") {
++            express(launcherSvg, "offline", true);
++            later("unblink", () => {
++              if (chatState === "idle" && currentState(launcherSvg) === "offline") {
++                refresh(true);
++                if (random() < 0.18) later("blink2", () => {
++                  if (proactive() && currentState(launcherSvg) !== "offline") {
++                    const keep = currentState(launcherSvg);
++                    express(launcherSvg, "offline", true);
++                    later("unblink2", () => { if (currentState(launcherSvg) === "offline" && chatState === "idle") express(launcherSvg, keep, true); }, 120);
++                  }
++                }, 210);
++              }
++            }, 120 + random() * 50);
++          }
++        }
++        blinkLoop();
++      }, nextBlinkDelay(random));
++    }
++    function setTilt(value) { if (avatarEl) avatarEl.style.setProperty("--pb-tilt", String(value)); }
++    function flairLoop() {
++      later("flair", () => {
++        if (proactive() && !launcherHover && !hoverExpr && !sectionExpr) {
++          flairExpr = pickFlair(random, lastFlair);
++          lastFlair = flairExpr;
++          setTilt((random() * 6 - 3).toFixed(1));
++          refresh();
++          later("flairEnd", () => { flairExpr = null; setTilt(0); refresh(); }, 1600 + random() * 900);
++        }
++        flairLoop();
++      }, nextFlairDelay(random));
++    }
++
++    // ---- leaning toward the pointer, a touch, or the hovered feature --------
++    let pointer = null, hoverEl = null, raf = 0;
++    const lean = { x: 0, y: 0 };
++    function leaning() { return !rm.matches && !panelOpen && avatarEl && avatarEl.offsetParent !== null; }
++    function targetPoint() {
++      if (hoverEl && document.contains(hoverEl)) {
++        const rect = hoverEl.getBoundingClientRect();
++        return { x: rect.left + rect.width / 2, y: rect.top + Math.min(rect.height / 2, 120) };
++      }
++      return pointer;
++    }
++    function kick() { if (!raf && avatarEl && root.requestAnimationFrame) raf = root.requestAnimationFrame(tick); }
++    function tick() {
++      raf = 0;
++      let target = { x: 0, y: 0 };
++      if (leaning()) {
++        const point = targetPoint();
++        if (point) {
++          const rect = avatarEl.getBoundingClientRect();
++          target = computeLean(rect.left + rect.width / 2, rect.top + rect.height / 2, point.x, point.y);
++        }
++      }
++      lean.x += (target.x - lean.x) * 0.14;
++      lean.y += (target.y - lean.y) * 0.14;
++      avatarEl.style.setProperty("--pb-lx", (lean.x * 3).toFixed(2) + "px");
++      avatarEl.style.setProperty("--pb-ly", (lean.y * 2).toFixed(2) + "px");
++      avatarEl.style.setProperty("--pb-lr", (lean.x * 7).toFixed(2) + "deg");
++      const settled = Math.abs(target.x - lean.x) < 0.004 && Math.abs(target.y - lean.y) < 0.004;
++      if (!settled) kick();
++    }
++    document.addEventListener("pointermove", (event) => {
++      pointer = { x: event.clientX, y: event.clientY };
++      if (event.pointerType === "touch") later("touchRelease", () => { pointer = null; kick(); }, 1400);
++      kick();
++    }, { passive: true });
++    document.addEventListener("pointerdown", (event) => {
++      if (event.pointerType !== "touch") return;
++      pointer = { x: event.clientX, y: event.clientY };
++      later("touchRelease", () => { pointer = null; kick(); }, 1400);
++      kick();
++    }, { passive: true });
++    document.documentElement.addEventListener("mouseleave", () => { pointer = null; kick(); });
++    root.addEventListener("scroll", () => { if (hoverEl) kick(); }, { passive: true });
++
++    // ---- reacting to the feature under the mouse -----------------------------
++    const HOVER_SELECTOR = ".feature, .pb-node, .contact-card";
++    document.addEventListener("pointerover", (event) => {
++      if (event.pointerType !== "mouse" || !event.target.closest) return;
++      const el = event.target.closest(HOVER_SELECTOR);
++      if (!el || el === hoverEl) return;
++      hoverEl = el;
++      cancel("hoverOff");
++      later("hoverOn", () => {
++        if (hoverEl !== el) return;
++        hoverExpr = el.matches(".contact-card") ? "responding" : "thinking";
++        refresh();
++        kick();
++      }, 280);
++    });
++    document.addEventListener("pointerout", (event) => {
++      if (!hoverEl || !hoverEl.contains(event.target)) return;
++      if (event.relatedTarget && hoverEl.contains(event.relatedTarget)) return;
++      hoverEl = null;
++      cancel("hoverOn");
++      later("hoverOff", () => { if (!hoverEl) { hoverExpr = null; refresh(); } }, 350);
++      kick();
++    });
++
++    // ---- launcher hover / focus ---------------------------------------------
++    launcher.addEventListener("pointerenter", () => { launcherHover = true; refresh(); });
++    launcher.addEventListener("pointerleave", () => { launcherHover = false; refresh(); });
++    launcher.addEventListener("focus", () => { launcherHover = true; refresh(); });
++    launcher.addEventListener("blur", () => { launcherHover = false; refresh(); });
++
++    // ---- reacting to page sections ------------------------------------------
++    const seenSections = {};
++    let lastReaction = 0;
++    function onSection(id) {
++      const reaction = sectionReaction(id);
++      if (!reaction || seenSections[id]) return;
++      seenSections[id] = true;
++      if (!proactive() || Date.now() - lastReaction < 5000) return;
++      lastReaction = Date.now();
++      sectionExpr = reaction.expr;
++      refresh();
++      later("sectionEnd", () => { sectionExpr = null; refresh(); }, 2400);
++      if (reaction.hint && canHint()) showHint(reaction.hint);
++    }
++    if ("IntersectionObserver" in root) {
++      const observer = new IntersectionObserver((entries) => {
++        entries.forEach((entry) => { if (entry.isIntersecting) onSection(entry.target.id); });
++      }, { rootMargin: "-40% 0px -40% 0px", threshold: 0 });
++      Object.keys(SECTIONS).forEach((id) => { const el = document.getElementById(id); if (el) observer.observe(el); });
++    }
++
++    // ---- first-visit wave ----------------------------------------------------
++    const GREETED_KEY = "pbMascotGreeted";
++    function wave() {
++      if (!avatarEl) return;
++      avatarEl.classList.remove("pb-wave");
++      void avatarEl.offsetWidth;
++      avatarEl.classList.add("pb-wave");
++      later("waveEnd", () => avatarEl.classList.remove("pb-wave"), 1700);
++      sectionExpr = "responding";
++      refresh();
++      later("sectionEnd", () => { sectionExpr = null; refresh(); }, 2200);
++    }
++    function greetFirstVisit() {
++      if (readStore("localStorage", GREETED_KEY) !== null) return;            // already greeted before
++      if (!writeStore("localStorage", "pbMascotProbe", "1")) return;          // cannot remember the visit: stay quiet
++      let attempts = 0;
++      later("greet", function tryGreet() {
++        if (!proactive() || !canHint()) {
++          if (++attempts < 5) later("greet", tryGreet, 4000);
++          return;
++        }
++        writeStore("localStorage", GREETED_KEY, "1");
++        wave();
++        showHint("Hi! Ask me anything about your project.");
++      }, 3200);
++    }
++
++    // ---- listening while the visitor types ----------------------------------
++    function lastAvatar() {
++      const list = messagesEl ? messagesEl.querySelectorAll(".pb-assistant__message-avatar") : [];
++      return list.length ? list[list.length - 1] : null;
++    }
++    const typingOK = () => panelOpen && (chatState === "idle" || chatState === "success" || chatState === "error");
++    let lastNod = 0;
++    function typedMood() {
++      if (!typingOK()) return;
++      const avatar = lastAvatar();
++      if (!avatar) return;
++      const text = input ? input.value : "";
++      const mood = text.trim() ? classifyMessage(text) : "neutral";
++      express(avatar.querySelector("svg"), TYPING_EXPRESSION[mood]);
++    }
++    if (input) input.addEventListener("input", () => {
++      if (!typingOK()) return;
++      const avatar = lastAvatar();
++      if (!avatar) return;
++      if (!rm.matches) {
++        const now = Date.now();
++        if (now - lastNod > 380) {
++          lastNod = now;
++          avatar.classList.remove("pb-nod");
++          void avatar.offsetWidth;
++          avatar.classList.add("pb-nod");
++        }
++        avatar.classList.add("pb-listening");
++        later("typingEnd", () => { const a = lastAvatar(); if (a) a.classList.remove("pb-listening"); }, 1800);
++      }
++      later("mood", typedMood, 550);
++    });
++
++    // ---- hooks used by script.js --------------------------------------------
++    function chatSvgs() {
++      const avatar = lastAvatar();
++      return [launcherSvg, avatar ? avatar.querySelector("svg") : null].filter(Boolean);
++    }
++    api.setChatState = function (state) {
++      chatState = state;
++      cancel("mood");
++      if (state !== "thinking") cancel("flash");
++      if (state !== "idle") { flairExpr = null; sectionExpr = null; setTilt(0); }
++      const avatar = lastAvatar();
++      if (avatar && state !== "idle" && state !== "success" && state !== "error") avatar.classList.remove("pb-listening");
++      if (state === "idle") refresh();
++    };
++    api.onUserMessage = function (text) {
++      lastMood = classifyMessage(text);
++      cancel("mood");
++      const avatar = lastAvatar();
++      if (avatar) avatar.classList.remove("pb-listening");
++      const flash = SEND_FLASH[lastMood];
++      if (flash) {
++        chatSvgs().forEach((svg) => express(svg, flash));
++        later("flash", () => {
++          if (chatState === "thinking") chatSvgs().forEach((svg) => express(svg, "thinking"));
++        }, 750);
++      }
++      return lastMood;
++    };
++    api.afterResponseState = function () { return afterResponseState(lastMood); };
++
++    // ---- panel open / close ---------------------------------------------------
++    new MutationObserver(() => {
++      const open = document.body.classList.contains("pb-assistant-open");
++      if (open === panelOpen) return;
++      panelOpen = open;
++      if (open) {
++        interacted = true;
++        launcherHover = false; hoverExpr = null; sectionExpr = null; flairExpr = null;
++        hideHint();
++      } else {
++        refresh();
++        kick();
++      }
++    }).observe(document.body, { attributes: true, attributeFilter: ["class"] });
++    launcher.addEventListener("click", () => { interacted = true; hideHint(); });
++
++    blinkLoop();
++    flairLoop();
++    greetFirstVisit();
++  }
++
++  // The assistant markup sits before the scripts, so we can start right away.
++  if (document.getElementById("pbAssistant")) boot();
++  else document.addEventListener("DOMContentLoaded", boot);
++})(typeof window !== "undefined" ? window : globalThis);
+diff --git a/package.json b/package.json
+index ded54d07d69f242ef9051269d9e269ca0d98eb71..fc87c0cee8abbcded9a26fe344dd96920c511ab4 100644
+--- a/package.json
++++ b/package.json
+@@ -3,6 +3,8 @@
+   "private": true,
+   "type": "module",
+   "scripts": {
+-    "test:worker": "node --test tests/worker.test.js"
++    "test:worker": "node --test tests/worker.test.js",
++    "test:mascot": "node --test tests/mascot.test.js",
++    "test": "node --test tests/*.test.js"
+   }
+ }
+diff --git a/script.js b/script.js
+index a7f574299d1ae6ea051ba2c299f2e64496ac4053..b925df9b6cf1cb4181322db0e1453a3f11aab3ef 100644
+--- a/script.js
++++ b/script.js
+@@ -747,6 +747,11 @@
+     function setExpression(useElement, state) {
+       if (!useElement) return;
+       const expression = mascotExpressions[state] || mascotExpressions.idle;
++      // The smart mascot crossfades between expressions; fall back to a plain swap without it.
++      if (window.PBMascot && useElement.ownerSVGElement) {
++        window.PBMascot.express(useElement.ownerSVGElement, expression);
++        return;
++      }
+       useElement.setAttribute("href", "assets/mascot-expressions.svg#" + expression);
+     }
+ 
+@@ -764,6 +769,7 @@
+         setExpression(activeMessageAvatar.querySelector("use"), safeState);
+       }
+       setExpression(launcherUse, safeState);
++      if (window.PBMascot) window.PBMascot.setChatState(safeState);
+ 
+       if (transition && mascotExpressions[transition.state]) {
+         stateTimer = window.setTimeout(() => {
+@@ -968,8 +974,10 @@
+       send.disabled = true;
+       if (reset) reset.disabled = true;
+       setStatus("Thinking…");
+-      setCharacterState("thinking", "Thinking through your question…");
++      // Create the pending message first so the "thinking" pose lands on its avatar.
+       const pending = addMessage("Thinking", "assistant", { pending: true });
++      setCharacterState("thinking", "Thinking through your question…");
++      if (window.PBMascot) window.PBMascot.onUserMessage(message);
+ 
+       try {
+         const response = await fetch(endpoint.replace(/\/$/, "") + "/api/chat", {
+@@ -988,7 +996,11 @@
+         history.push({ role: "assistant", content: answer });
+         if (history.length > maxHistory) history.splice(0, history.length - maxHistory);
+         setStatus("");
+-        setCharacterState("responding", "Responding…", { state: "success", label: "Response ready", delay: 850 });
++        setCharacterState("responding", "Responding…", {
++          state: window.PBMascot ? window.PBMascot.afterResponseState() : "success",
++          label: "Response ready",
++          delay: 850
++        });
+       } catch (error) {
+         pending.classList.remove("pb-assistant__message--pending");
+         pending.classList.add("pb-assistant__message--error");
+diff --git a/tests/mascot.test.js b/tests/mascot.test.js
+new file mode 100644
+index 0000000000000000000000000000000000000000..f2a64d0d619a1559f1ef970cea0cb5155b18a019
+--- /dev/null
++++ b/tests/mascot.test.js
+@@ -0,0 +1,75 @@
++import test from "node:test";
++import assert from "node:assert/strict";
++import fs from "node:fs";
++import vm from "node:vm";
++
++// mascot.js is a classic browser script; load it in a bare context (no DOM) to reach its pure logic.
++const sandbox = {};
++vm.createContext(sandbox);
++vm.runInContext(fs.readFileSync(new URL("../mascot.js", import.meta.url), "utf8"), sandbox);
++const { logic } = sandbox.PBMascot;
++
++test("classifyMessage detects worried, happy, friendly, attentive and neutral messages", () => {
++  assert.equal(logic.classifyMessage("Our internet is very slow today"), "worried");
++  assert.equal(logic.classifyMessage("Hindi gumagana ang POS namin"), "worried");
++  assert.equal(logic.classifyMessage("The server is down!"), "worried");
++  assert.equal(logic.classifyMessage("Thanks, that was great"), "happy");
++  assert.equal(logic.classifyMessage("Salamat po"), "happy");
++  assert.equal(logic.classifyMessage("Hello there"), "friendly");
++  assert.equal(logic.classifyMessage("Kumusta po"), "friendly");
++  assert.equal(logic.classifyMessage("x".repeat(300)), "attentive");
++  assert.equal(logic.classifyMessage("I need an inventory system"), "neutral");
++  assert.equal(logic.classifyMessage(""), "neutral");
++  assert.equal(logic.classifyMessage(null), "neutral");
++});
++
++test("classifyMessage does not misfire on partial words", () => {
++  assert.equal(logic.classifyMessage("I want to download the report"), "neutral");
++  assert.equal(logic.classifyMessage("What is a Slowloris attack?"), "neutral");
++});
++
++test("worry takes priority over thanks, and the mascot stays calm after a worried message", () => {
++  assert.equal(logic.classifyMessage("Thanks, but the network is broken"), "worried");
++  assert.equal(logic.afterResponseState("worried"), "idle");
++  assert.equal(logic.afterResponseState("happy"), "success");
++  assert.equal(logic.afterResponseState("neutral"), "success");
++});
++
++test("every expression the mascot can ask for exists in the sprite", () => {
++  const svg = fs.readFileSync(new URL("../assets/mascot-expressions.svg", import.meta.url), "utf8");
++  const ids = [...svg.matchAll(/<symbol id="(\w+)"/g)].map((m) => m[1]);
++  const wanted = new Set([
++    ...Object.values(logic.TYPING_EXPRESSION),
++    ...Object.values(logic.SEND_FLASH),
++    ...["about", "technology", "services", "process", "contact"].map((id) => logic.sectionReaction(id).expr),
++    logic.pickFlair(() => 0, null), logic.pickFlair(() => 0.99, null)
++  ]);
++  for (const name of wanted) assert.ok(ids.includes(name), `missing symbol: ${name}`);
++  assert.deepEqual([...logic.STATES].sort(), [...ids].sort());
++});
++
++test("sectionReaction only answers for known sections", () => {
++  assert.equal(logic.sectionReaction("services").expr, "responding");
++  assert.equal(logic.sectionReaction("top"), null);
++  assert.equal(logic.sectionReaction("constructor"), null);
++  assert.equal(logic.sectionReaction("__proto__"), null);
++});
++
++test("computeLean points toward the target and stays within -1..1", () => {
++  const right = logic.computeLean(100, 100, 600, 100);
++  assert.ok(right.x > 0.9 && Math.abs(right.y) < 1e-9);
++  const upLeft = logic.computeLean(100, 100, 0, 0);
++  assert.ok(upLeft.x < 0 && upLeft.y < 0);
++  const still = logic.computeLean(50, 50, 50, 50);
++  assert.equal(still.x, 0);
++  assert.equal(still.y, 0);
++  const near = logic.computeLean(100, 100, 110, 100);
++  assert.ok(near.x >= 0.35 && near.x <= 1);
++});
++
++test("timers stay in sensible ranges and flair never repeats back to back", () => {
++  assert.ok(logic.nextBlinkDelay(() => 0) >= 2600 && logic.nextBlinkDelay(() => 0.999) <= 6400);
++  assert.ok(logic.nextFlairDelay(() => 0) >= 9000);
++  assert.notEqual(logic.pickFlair(() => 0.2, "thinking"), "thinking");
++  assert.notEqual(logic.pickFlair(() => 0.8, "responding"), "responding");
++});

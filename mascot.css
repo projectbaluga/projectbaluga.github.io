@@ -1,0 +1,79 @@
+/* ProjectBaluga smart mascot — loaded after styles.css so these rules win. */
+
+/* Expression crossfade (two stacked <use> layers, managed by mascot.js) */
+.pb-mascot__layer { opacity: 0; transition: opacity .16s ease; }
+.pb-mascot__layer.is-on { opacity: 1; }
+.pb-assistant__mascot.is-instant .pb-mascot__layer { transition: none; }
+
+/* Launcher character: a little larger, and alive.
+   transform = lean (JS) · rotate = tilt / wave · scale = breathing · translate = nod */
+.pb-assistant__launcher-avatar {
+  width: 40px; height: 40px; min-width: 40px; max-width: 40px;
+  min-height: 40px; max-height: 40px; flex: 0 0 40px;
+  margin: -6px 0 -6px -4px;
+  transform: translate(var(--pb-lx, 0px), var(--pb-ly, 0px)) rotate(var(--pb-lr, 0deg));
+  rotate: calc(var(--pb-tilt, 0) * 1deg);
+  transform-origin: 50% 92%;
+  transition: rotate .9s ease;
+  animation: pb-breathe 4.2s ease-in-out infinite;
+}
+.pb-assistant__launcher-avatar.pb-wave { animation: pb-wave 1.6s ease-in-out 1; }
+@keyframes pb-breathe {
+  0%, 100% { scale: 1; }
+  50% { scale: 1.03 1.05; }
+}
+@keyframes pb-wave {
+  0%   { rotate: 0deg;   translate: 0 0; }
+  12%  { rotate: 14deg;  translate: 0 -3px; }
+  28%  { rotate: -10deg; translate: 0 0; }
+  44%  { rotate: 13deg;  translate: 0 -2px; }
+  60%  { rotate: -7deg;  translate: 0 0; }
+  78%  { rotate: 6deg;   translate: 0 -1px; }
+  100% { rotate: 0deg;   translate: 0 0; }
+}
+
+/* Listening while the visitor types (last assistant avatar inside the chat) */
+.pb-assistant__message-avatar { transition: rotate .5s ease; }
+.pb-assistant__message-avatar.pb-listening { rotate: -5deg; }
+.pb-assistant__message-avatar.pb-nod { animation: pb-nod .32s ease-out; }
+@keyframes pb-nod {
+  0%   { translate: 0 0; }
+  40%  { translate: 0 2px; }
+  100% { translate: 0 0; }
+}
+
+/* Speech bubble above the launcher */
+.pb-mascot-hint {
+  position: absolute; right: 0; bottom: calc(100% + 12px);
+  width: max-content; max-width: min(260px, calc(100vw - 2.5rem));
+  padding: .6rem .85rem;
+  border: 1px solid var(--border-2, #dbe3ef);
+  border-radius: 14px 14px 4px 14px;
+  background: var(--surface, #fff); color: var(--text, #14213d);
+  box-shadow: 0 10px 28px rgba(15, 35, 75, .18);
+  font: 500 .82rem/1.35 var(--font-body, Inter, sans-serif);
+  opacity: 0; transform: translateY(6px) scale(.98); pointer-events: none;
+  transition: opacity .22s ease, transform .22s ease;
+  cursor: pointer;
+}
+.pb-mascot-hint.is-visible { opacity: 1; transform: none; pointer-events: auto; }
+body.pb-assistant-open .pb-mascot-hint { display: none; }
+
+@media (max-width: 420px) {
+  .pb-assistant__launcher-avatar {
+    width: 36px; height: 36px; min-width: 36px; max-width: 36px;
+    min-height: 36px; max-height: 36px; flex-basis: 36px;
+  }
+}
+
+/* No ambient motion for people who ask for less of it */
+@media (prefers-reduced-motion: reduce) {
+  .pb-assistant__launcher-avatar,
+  .pb-assistant__launcher-avatar.pb-wave {
+    animation: none !important; transition: none; transform: none; rotate: none;
+  }
+  .pb-assistant__message-avatar,
+  .pb-assistant__message-avatar.pb-listening,
+  .pb-assistant__message-avatar.pb-nod { animation: none !important; transition: none; rotate: none; }
+  .pb-mascot__layer, .pb-mascot-hint { transition: none; }
+}

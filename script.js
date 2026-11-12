@@ -747,6 +747,11 @@
     function setExpression(useElement, state) {
       if (!useElement) return;
       const expression = mascotExpressions[state] || mascotExpressions.idle;
+      // The smart mascot crossfades between expressions; fall back to a plain swap without it.
+      if (window.PBMascot && useElement.ownerSVGElement) {
+        window.PBMascot.express(useElement.ownerSVGElement, expression);
+        return;
+      }
       useElement.setAttribute("href", "assets/mascot-expressions.svg#" + expression);
     }
 
@@ -764,6 +769,7 @@
         setExpression(activeMessageAvatar.querySelector("use"), safeState);
       }
       setExpression(launcherUse, safeState);
+      if (window.PBMascot) window.PBMascot.setChatState(safeState);
 
       if (transition && mascotExpressions[transition.state]) {
         stateTimer = window.setTimeout(() => {
@@ -968,8 +974,10 @@
       send.disabled = true;
       if (reset) reset.disabled = true;
       setStatus("Thinking…");
-      setCharacterState("thinking", "Thinking through your question…");
+      // Create the pending message first so the "thinking" pose lands on its avatar.
       const pending = addMessage("Thinking", "assistant", { pending: true });
+      setCharacterState("thinking", "Thinking through your question…");
+      if (window.PBMascot) window.PBMascot.onUserMessage(message);
 
       try {
         const response = await fetch(endpoint.replace(/\/$/, "") + "/api/chat", {
@@ -988,7 +996,11 @@
         history.push({ role: "assistant", content: answer });
         if (history.length > maxHistory) history.splice(0, history.length - maxHistory);
         setStatus("");
-        setCharacterState("responding", "Responding…", { state: "success", label: "Response ready", delay: 850 });
+        setCharacterState("responding", "Responding…", {
+          state: window.PBMascot ? window.PBMascot.afterResponseState() : "success",
+          label: "Response ready",
+          delay: 850
+        });
       } catch (error) {
         pending.classList.remove("pb-assistant__message--pending");
         pending.classList.add("pb-assistant__message--error");
