@@ -728,8 +728,6 @@
     const send = document.getElementById("pbAssistantSend");
     const messagesEl = document.getElementById("pbAssistantMessages");
     const status = document.getElementById("pbAssistantStatus");
-    const avatar = document.getElementById("pbAssistantAvatar");
-    const avatarUse = avatar ? avatar.querySelector("use") : null;
     const launcherUse = launcher ? launcher.querySelector(".pb-assistant__launcher-avatar use") : null;
     const characterStatus = document.getElementById("pbAssistantCharacterStatus");
     const mascotExpressions = {
@@ -742,7 +740,6 @@
     };
     const history = [];
     const maxHistory = 8;
-    const welcomeText = "Hello! I’m ProjectBaluga’s AI assistant. Tell me a little about your business or the technology challenge you’re working through.";
     let previousFocus = null;
     let busy = false;
     let stateTimer = null;
@@ -759,10 +756,13 @@
         stateTimer = null;
       }
       const safeState = mascotExpressions[state] ? state : "idle";
-      if (avatar) avatar.dataset.state = safeState;
       if (characterStatus) characterStatus.textContent = label || "Ready to help";
       if (launcher) launcher.dataset.state = safeState;
-      setExpression(avatarUse, safeState);
+      const activeMessageAvatar = messagesEl.querySelector(".pb-assistant__message-row:last-of-type .pb-assistant__message-avatar");
+      if (activeMessageAvatar) {
+        activeMessageAvatar.dataset.state = safeState;
+        setExpression(activeMessageAvatar.querySelector("use"), safeState);
+      }
       setExpression(launcherUse, safeState);
 
       if (transition && mascotExpressions[transition.state]) {
@@ -784,6 +784,14 @@
       launcher.setAttribute("aria-expanded", "true");
       document.body.classList.add("pb-assistant-open");
       setAvailableState();
+      if (!history.length) {
+        const welcomeAvatar = messagesEl.querySelector(".pb-assistant__message-avatar");
+        const greeting = getWelcomeGreeting();
+        if (welcomeAvatar) {
+          welcomeAvatar.dataset.state = greeting.mascotState;
+          setExpression(welcomeAvatar.querySelector("use"), greeting.mascotState);
+        }
+      }
       input.focus();
     }
     function closePanel() {
@@ -812,6 +820,21 @@
       });
       bubble.appendChild(copy);
     }
+    function createMessageAvatar() {
+      const avatarEl = document.createElement("div");
+      avatarEl.className = "pb-assistant__message-avatar";
+      avatarEl.dataset.state = "idle";
+      avatarEl.setAttribute("aria-hidden", "true");
+      const svg = document.createElementNS("http://www.w3.org/2000/svg", "svg");
+      svg.setAttribute("viewBox", "0 0 96 96");
+      svg.setAttribute("class", "pb-assistant__mascot");
+      svg.setAttribute("focusable", "false");
+      const use = document.createElementNS("http://www.w3.org/2000/svg", "use");
+      use.setAttribute("href", "assets/mascot-expressions.svg#idle");
+      svg.appendChild(use);
+      avatarEl.appendChild(svg);
+      return avatarEl;
+    }
     function addMessage(content, kind, options = {}) {
       const bubble = document.createElement("div");
       bubble.className = "pb-assistant__message pb-assistant__message--" + kind;
@@ -819,18 +842,79 @@
       text.className = "pb-assistant__message-text";
       text.textContent = content;
       bubble.appendChild(text);
-      if (options.copy) addCopyAction(bubble, content);
       if (options.pending) {
         bubble.classList.add("pb-assistant__message--pending");
         bubble.setAttribute("aria-label", "Assistant is thinking");
       }
-      messagesEl.appendChild(bubble);
+
+      if (kind === "assistant") {
+        const row = document.createElement("div");
+        row.className = "pb-assistant__message-row pb-assistant__message-row--assistant";
+        row.appendChild(createMessageAvatar());
+        const stack = document.createElement("div");
+        stack.className = "pb-assistant__message-stack";
+        stack.appendChild(bubble);
+        row.appendChild(stack);
+        messagesEl.appendChild(row);
+        bubble._pbMessageStack = stack;
+      } else {
+        messagesEl.appendChild(bubble);
+      }
+
+      if (options.copy) addCopyAction(bubble, content);
       messagesEl.scrollTop = messagesEl.scrollHeight;
       return bubble;
     }
+    function renderAssistantResponse(firstBubble, content) {
+      const paragraphs = String(content).split(/\n\s*\n/).map((part) => part.trim()).filter(Boolean);
+      const parts = paragraphs.length ? paragraphs : [String(content)];
+      const firstText = firstBubble.querySelector(".pb-assistant__message-text");
+      firstText.textContent = parts[0];
+      firstBubble.classList.remove("pb-assistant__message--pending");
+      firstBubble.removeAttribute("aria-label");
+      const stack = firstBubble._pbMessageStack;
+      let lastBubble = firstBubble;
+      parts.slice(1).forEach((part) => {
+        const nextBubble = document.createElement("div");
+        nextBubble.className = "pb-assistant__message pb-assistant__message--assistant";
+        const nextText = document.createElement("span");
+        nextText.className = "pb-assistant__message-text";
+        nextText.textContent = part;
+        nextBubble.appendChild(nextText);
+        stack.appendChild(nextBubble);
+        lastBubble = nextBubble;
+      });
+      addCopyAction(lastBubble, content);
+      messagesEl.scrollTop = messagesEl.scrollHeight;
+    }
+    function getWelcomeGreeting() {
+      const hour = new Date().getHours();
+      if (hour >= 6 && hour < 12) {
+        return {
+          text: "Good morning! What can we help you make simpler today?\n\nI can help you explore business systems, IT solutions, software, and automation.",
+          mascotState: "success"
+        };
+      }
+      if (hour >= 12 && hour < 18) {
+        return {
+          text: "Good afternoon! What would you like to improve in your business today?\n\nI can help you explore business systems, IT solutions, software, and automation.",
+          mascotState: "responding"
+        };
+      }
+      return {
+        text: "Good evening! Let’s explore a smarter solution for your business.\n\nI can help you explore business systems, IT solutions, software, and automation.",
+        mascotState: "idle"
+      };
+    }
     function renderWelcome() {
       messagesEl.replaceChildren();
-      addMessage(welcomeText, "assistant");
+      const greeting = getWelcomeGreeting();
+      const welcomeBubble = addMessage(greeting.text, "assistant");
+      const welcomeAvatar = messagesEl.querySelector(".pb-assistant__message-avatar");
+      if (welcomeAvatar) {
+        welcomeAvatar.dataset.state = greeting.mascotState;
+        setExpression(welcomeAvatar.querySelector("use"), greeting.mascotState);
+      }
       const group = document.createElement("div");
       group.className = "pb-assistant__suggestions";
       group.id = "pbAssistantSuggestions";
@@ -852,6 +936,7 @@
       });
       messagesEl.appendChild(group);
       messagesEl.scrollTop = messagesEl.scrollHeight;
+      return welcomeBubble;
     }
 
     async function sendMessage(rawMessage) {
@@ -899,10 +984,7 @@
         }
         const answer = typeof payload.reply === "string" ? payload.reply.trim() : "";
         if (!answer) throw new Error("The assistant returned an empty response. Please try again.");
-        pending.classList.remove("pb-assistant__message--pending");
-        pending.removeAttribute("aria-label");
-        pending.querySelector(".pb-assistant__message-text").textContent = answer;
-        addCopyAction(pending, answer);
+        renderAssistantResponse(pending, answer);
         history.push({ role: "assistant", content: answer });
         if (history.length > maxHistory) history.splice(0, history.length - maxHistory);
         setStatus("");
@@ -941,6 +1023,7 @@
     });
 
     setAvailableState();
+    renderWelcome();
     launcher.addEventListener("click", openPanel);
     close.addEventListener("click", closePanel);
     if (reset) reset.addEventListener("click", () => {

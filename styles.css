@@ -3304,3 +3304,125 @@ html[data-background-section="projects"] .topography-canvas {
 @media (prefers-reduced-motion: reduce) {
   .pb-assistant__mascot { animation: none !important; }
 }
+
+
+/* Chat window refinement: adaptive themes, grouped assistant messages, and inline mascot */
+.pb-assistant__header {
+  background: var(--surface) !important;
+  color: var(--text);
+  border-bottom-color: var(--border);
+}
+.pb-assistant__identity { gap: 0; }
+.pb-assistant__identity-copy h2 { color: var(--text); }
+.pb-assistant__identity-copy .pb-assistant__eyebrow { color: var(--text-3); }
+.pb-assistant__character-status { color: var(--text-2); }
+.pb-assistant__close {
+  border-color: var(--border-2);
+  background: var(--surface-2);
+  color: var(--text-2);
+}
+.pb-assistant__close:hover { background: var(--surface); color: var(--text); }
+.pb-assistant__reset {
+  border-color: var(--border);
+  background: var(--surface-2);
+  color: var(--text-2);
+}
+.pb-assistant__messages {
+  background: var(--bg-alt);
+  scrollbar-color: var(--border-2) transparent;
+}
+.pb-assistant__message-row {
+  display: flex;
+  align-items: flex-start;
+  gap: .55rem;
+  width: 100%;
+  max-width: 100%;
+  animation: pb-message-in .24s ease-out both;
+}
+.pb-assistant__message-avatar {
+  display: grid;
+  place-items: center;
+  flex: 0 0 34px;
+  width: 34px;
+  height: 34px;
+  margin-top: .12rem;
+  overflow: hidden;
+  border: 1px solid var(--border-2);
+  border-radius: 50%;
+  background: var(--surface);
+  box-shadow: 0 2px 8px rgba(0,0,0,.08);
+}
+.pb-assistant__message-avatar .pb-assistant__mascot {
+  display: block;
+  width: 100%;
+  height: 100%;
+  padding: 2px;
+  box-sizing: border-box;
+}
+.pb-assistant__message-avatar[data-state="thinking"] .pb-assistant__mascot { animation: pb-mascot-think 1.15s ease-in-out infinite; }
+.pb-assistant__message-avatar[data-state="responding"] .pb-assistant__mascot { animation: pb-mascot-speak .62s ease-in-out infinite; transform-origin: center bottom; }
+.pb-assistant__message-avatar[data-state="success"] .pb-assistant__mascot { animation: pb-mascot-pop .42s ease-out; }
+.pb-assistant__message-stack {
+  display: flex;
+  flex: 1 1 auto;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: .38rem;
+  min-width: 0;
+}
+.pb-assistant__message-row .pb-assistant__message {
+  align-self: flex-start;
+  width: fit-content;
+  max-width: 100%;
+  margin: 0;
+  border: 1px solid var(--border);
+  border-radius: 15px 15px 15px 5px;
+  background: var(--surface);
+  color: var(--text);
+  box-shadow: 0 2px 8px rgba(0,0,0,.045);
+}
+.pb-assistant__message-row .pb-assistant__message + .pb-assistant__message {
+  border-top-left-radius: 7px;
+}
+.pb-assistant__message-row .pb-assistant__message--error {
+  border-color: rgba(198,91,91,.42);
+  background: color-mix(in srgb, var(--surface) 90%, #d65b5b 10%);
+  color: var(--text);
+}
+.pb-assistant__message-row .pb-assistant__message-text { display: block; }
+.pb-assistant__suggestions { margin-left: 2.65rem; }
+.pb-assistant__form {
+  background: var(--surface);
+  border-top-color: var(--border);
+}
+.pb-assistant__form textarea {
+  background: var(--bg-alt);
+  border-color: var(--border);
+  color: var(--text);
+}
+.pb-assistant__form textarea:focus {
+  background: var(--surface);
+  border-color: var(--accent);
+  box-shadow: 0 0 0 3px var(--accent-soft);
+}
+.pb-assistant__notice, .pb-assistant__status {
+  background: var(--surface);
+  color: var(--text-3);
+}
+.pb-assistant__copy {
+  border-color: var(--border);
+  color: var(--text-3);
+}
+@keyframes pb-message-in {
+  from { opacity: 0; transform: translateY(4px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+@media (max-width: 600px) {
+  .pb-assistant__message-avatar { flex-basis: 31px; width: 31px; height: 31px; }
+  .pb-assistant__message-row { gap: .45rem; }
+  .pb-assistant__suggestions { margin-left: 2.35rem; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .pb-assistant__message-row { animation: none; }
+  .pb-assistant__message-avatar .pb-assistant__mascot { animation: none !important; }
+}
