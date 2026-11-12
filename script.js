@@ -961,7 +961,7 @@
     function addInquiryDraftAction(bubble) {
       const action = document.createElement("button");
       action.type = "button";
-      action.className = "btn btn--secondary btn--sm pb-assistant__inquiry-action";
+      action.className = "btn btn--ghost btn--sm pb-assistant__inquiry-action";
       action.textContent = "Review & Send Inquiry";
       action.addEventListener("click", () => {
         const form = document.getElementById("inquiryForm");
