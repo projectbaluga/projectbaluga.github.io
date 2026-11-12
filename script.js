@@ -928,12 +928,16 @@
     }
 
     window.addEventListener("offline", () => {
-      if (!busy) setCharacterState("offline", "Offline — resting");
-      setStatus("You appear to be offline. Check your connection before sending a message.");
+      if (!busy) {
+        setCharacterState("offline", "Offline — resting");
+        setStatus("You appear to be offline. Check your connection before sending a message.");
+      }
     });
     window.addEventListener("online", () => {
-      if (!busy) setCharacterState("idle", "Ready to help");
-      setStatus("");
+      if (!busy) {
+        setCharacterState("idle", "Ready to help");
+        setStatus("");
+      }
     });
 
     setAvailableState();
