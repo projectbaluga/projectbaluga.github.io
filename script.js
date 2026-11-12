@@ -729,17 +729,53 @@
     const messagesEl = document.getElementById("pbAssistantMessages");
     const status = document.getElementById("pbAssistantStatus");
     const avatar = document.getElementById("pbAssistantAvatar");
+    const avatarUse = avatar ? avatar.querySelector("use") : null;
+    const launcherUse = launcher ? launcher.querySelector(".pb-assistant__launcher-avatar use") : null;
     const characterStatus = document.getElementById("pbAssistantCharacterStatus");
+    const mascotExpressions = {
+      idle: "idle",
+      thinking: "thinking",
+      responding: "responding",
+      success: "success",
+      error: "error",
+      offline: "offline"
+    };
     const history = [];
     const maxHistory = 8;
     const welcomeText = "Hello! I’m ProjectBaluga’s AI assistant. Tell me a little about your business or the technology challenge you’re working through.";
     let previousFocus = null;
     let busy = false;
+    let stateTimer = null;
 
-    function setCharacterState(state, label) {
-      if (avatar) avatar.dataset.state = state;
-      if (characterStatus) characterStatus.textContent = label;
-      if (launcher) launcher.dataset.state = state;
+    function setExpression(useElement, state) {
+      if (!useElement) return;
+      const expression = mascotExpressions[state] || mascotExpressions.idle;
+      useElement.setAttribute("href", "assets/mascot-expressions.svg#" + expression);
+    }
+
+    function setCharacterState(state, label, transition) {
+      if (stateTimer) {
+        window.clearTimeout(stateTimer);
+        stateTimer = null;
+      }
+      const safeState = mascotExpressions[state] ? state : "idle";
+      if (avatar) avatar.dataset.state = safeState;
+      if (characterStatus) characterStatus.textContent = label || "Ready to help";
+      if (launcher) launcher.dataset.state = safeState;
+      setExpression(avatarUse, safeState);
+      setExpression(launcherUse, safeState);
+
+      if (transition && mascotExpressions[transition.state]) {
+        stateTimer = window.setTimeout(() => {
+          stateTimer = null;
+          setCharacterState(transition.state, transition.label);
+        }, Math.max(0, transition.delay || 0));
+      }
+    }
+
+    function setAvailableState() {
+      if (navigator.onLine === false) setCharacterState("offline", "Offline — resting");
+      else setCharacterState("idle", "Ready to help");
     }
     function setStatus(message) { status.textContent = message || ""; }
     function openPanel() {
@@ -747,14 +783,14 @@
       panel.hidden = false;
       launcher.setAttribute("aria-expanded", "true");
       document.body.classList.add("pb-assistant-open");
-      setCharacterState("idle", "Ready to help");
+      setAvailableState();
       input.focus();
     }
     function closePanel() {
       panel.hidden = true;
       launcher.setAttribute("aria-expanded", "false");
       document.body.classList.remove("pb-assistant-open");
-      setCharacterState("idle", "Ready to help");
+      setAvailableState();
       if (previousFocus && typeof previousFocus.focus === "function") previousFocus.focus();
     }
     function addCopyAction(bubble, content) {
@@ -821,12 +857,19 @@
     async function sendMessage(rawMessage) {
       const message = String(rawMessage || "").trim();
       if (!message || busy) return;
+      if (navigator.onLine === false) {
+        setCharacterState("offline", "Offline — resting");
+        setStatus("You appear to be offline. Check your internet connection and try again.");
+        return;
+      }
       const endpoint = (rootEl.dataset.apiUrl || "").trim();
       if (!endpoint) {
+        setCharacterState("offline", "Assistant not connected");
         setStatus("The assistant is not connected yet. Please contact ProjectBaluga.");
         return;
       }
       if (!/^https:\/\//i.test(endpoint)) {
+        setCharacterState("error", "Configuration issue");
         setStatus("Assistant configuration is invalid. Please contact ProjectBaluga.");
         return;
       }
@@ -863,14 +906,19 @@
         history.push({ role: "assistant", content: answer });
         if (history.length > maxHistory) history.splice(0, history.length - maxHistory);
         setStatus("");
-        setCharacterState("ready", "Here to help");
+        setCharacterState("responding", "Responding…", { state: "success", label: "Response ready", delay: 850 });
       } catch (error) {
         pending.classList.remove("pb-assistant__message--pending");
         pending.classList.add("pb-assistant__message--error");
         pending.querySelector(".pb-assistant__message-text").textContent = error.message || "Unable to reach the assistant.";
         history.pop();
-        setCharacterState("error", "Let's try that again");
-        setStatus("Your conversation stays in this page session only.");
+        if (navigator.onLine === false) {
+          setCharacterState("offline", "Offline — resting");
+          setStatus("Connection lost. Reconnect to the internet, then try again.");
+        } else {
+          setCharacterState("error", "Let's try that again");
+          setStatus("Your conversation stays in this page session only.");
+        }
       } finally {
         busy = false;
         send.disabled = false;
@@ -879,6 +927,16 @@
       }
     }
 
+    window.addEventListener("offline", () => {
+      if (!busy) setCharacterState("offline", "Offline — resting");
+      setStatus("You appear to be offline. Check your connection before sending a message.");
+    });
+    window.addEventListener("online", () => {
+      if (!busy) setCharacterState("idle", "Ready to help");
+      setStatus("");
+    });
+
+    setAvailableState();
     launcher.addEventListener("click", openPanel);
     close.addEventListener("click", closePanel);
     if (reset) reset.addEventListener("click", () => {
@@ -886,7 +944,7 @@
       history.length = 0;
       input.value = "";
       setStatus("Started a new conversation.");
-      setCharacterState("idle", "Ready to help");
+      setAvailableState();
       renderWelcome();
       input.focus();
     });
