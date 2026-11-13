@@ -30,7 +30,7 @@ function json(data, status = 200, origin = "") {
 
 async function readJson(request, maxBytes = MAX_BODY) {
   const contentType = request.headers.get("Content-Type") || "";
-  if (!/^application\\/json(?:\\s*;|\\s*$)/i.test(contentType)) throw new Error("invalid_content_type");
+  if (!/^application\/json(?:\s*;|\s*$)/i.test(contentType)) throw new Error("invalid_content_type");
   const declared = Number(request.headers.get("Content-Length"));
   if (Number.isFinite(declared) && declared > maxBytes) throw new Error("too_large");
   const reader = request.body?.getReader();
