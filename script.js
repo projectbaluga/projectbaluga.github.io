@@ -964,12 +964,12 @@
         .filter((entry) => entry.role === "user")
         .map((entry) => entry.content.trim())
         .filter(Boolean);
-      const combined = visitorNotes.join(" ").replace(/\\s+/g, " ").trim();
+      const combined = visitorNotes.join(" ").replace(/\s+/g, " ").trim();
       if (combined.length < 45) return false;
 
-      const mentionsService = /\\b(inventory|sales|pos|point of sale|website|web app|app|software|system|automation|automate|network|wi-?fi|router|mikrotik|server|database|backup|it support|computer|hardware|cloud|email|workflow|business process)\\b/i.test(combined);
-      const expressesNeed = /\\b(need|needs|want|wants|looking for|planning|plan to|would like|help me|help us|build|create|develop|set up|setup|improve|fix|replace|automate|upgrade|having trouble|problem|issue)\\b/i.test(combined);
-      const givesContext = /\\b(business|shop|store|office|company|team|staff|customer|currently|existing|manual|because|so that|for my|for our|budget|timeline|workflow|process)\\b/i.test(combined);
+      const mentionsService = /\b(inventory|sales|pos|point of sale|website|web app|app|software|system|automation|automate|network|wi-?fi|router|mikrotik|server|database|backup|it support|computer|hardware|cloud|email|workflow|business process)\b/i.test(combined);
+      const expressesNeed = /\b(need|needs|want|wants|looking for|planning|plan to|would like|help me|help us|build|create|develop|set up|setup|improve|fix|replace|automate|upgrade|having trouble|problem|issue)\b/i.test(combined);
+      const givesContext = /\b(business|shop|store|office|company|team|staff|customer|currently|existing|manual|because|so that|for my|for our|budget|timeline|workflow|process)\b/i.test(combined);
 
       // One detailed request is enough; otherwise require multiple messages with a clear need.
       return (mentionsService && expressesNeed && (givesContext || combined.length >= 100)) ||
