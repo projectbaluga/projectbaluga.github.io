@@ -697,7 +697,33 @@
           throw new Error(result.message || "The email service could not accept the inquiry.");
         }
 
-        showStatus("Thank you! Your inquiry has been sent to ProjectBaluga. We’ll get back to you using the email address you provided.", "is-success");
+        // The email delivery remains primary. Save to D1 only after FormSubmit confirms success.
+        const leadManagerUrl = LEAD_MANAGER_INTAKE_URL;
+        let savedToLeadManager = false;
+        if (leadManagerUrl) {
+          try {
+            const lead = {};
+            ["name", "email", "phone", "business", "service", "details", "budget", "timeline"].forEach((key) => {
+              lead[key] = String(payload.get(key) || "");
+            });
+            const leadResponse = await fetch(leadManagerUrl, {
+              method: "POST",
+              headers: { "Content-Type": "application/json", "Accept": "application/json" },
+              body: JSON.stringify(lead)
+            });
+            savedToLeadManager = leadResponse.ok;
+          } catch (saveError) {
+            // Do not report the email as failed or automatically resubmit it.
+            savedToLeadManager = false;
+          }
+        }
+
+        showStatus(
+          savedToLeadManager
+            ? "Thank you! Your inquiry was emailed to ProjectBaluga and saved securely for follow-up."
+            : "Thank you! Your inquiry email was sent successfully. The private lead dashboard is not connected yet, so this inquiry may not appear there. We’ll get back to you by email.",
+          "is-success"
+        );
         form.reset();
       } catch (error) {
         showStatus(

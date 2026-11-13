@@ -1,0 +1,19 @@
+name = "projectbaluga-lead-manager"
+main = "worker.js"
+compatibility_date = "2026-11-10"
+
+[[d1_databases]]
+binding = "LEADS_DB"
+database_name = "projectbaluga-leads"
+database_id = "REPLACE_WITH_D1_DATABASE_ID"
+
+[[ratelimits]]
+name = "LEAD_INTAKE_LIMITER"
+namespace_id = "817264"
+simple = { limit = 5, period = 60 }
+
+[vars]
+OWNER_EMAIL = "projectbaluga@gmail.com"
+# Set ACCESS_TEAM_DOMAIN and ACCESS_AUD as Worker secrets/vars in Cloudflare.
+# ACCESS_TEAM_DOMAIN = "your-team.cloudflareaccess.com"
+# ACCESS_AUD = "your-Cloudflare-Access-application-audience"
