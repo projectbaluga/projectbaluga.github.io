@@ -29,6 +29,8 @@ function json(data, status = 200, origin = "") {
 }
 
 async function readJson(request, maxBytes = MAX_BODY) {
+  const contentType = request.headers.get("Content-Type") || "";
+  if (!/^application\/json(?:\s*;|\s*$)/i.test(contentType)) throw new Error("invalid_content_type");
   const declared = Number(request.headers.get("Content-Length"));
   if (Number.isFinite(declared) && declared > maxBytes) throw new Error("too_large");
   const reader = request.body?.getReader();
@@ -48,7 +50,14 @@ async function readJson(request, maxBytes = MAX_BODY) {
   const bytes = new Uint8Array(total);
   let offset = 0;
   for (const chunk of chunks) { bytes.set(chunk, offset); offset += chunk.byteLength; }
-  return JSON.parse(new TextDecoder().decode(bytes));
+  let parsed;
+  try {
+    parsed = JSON.parse(new TextDecoder().decode(bytes));
+  } catch {
+    throw new Error("invalid_json");
+  }
+  if (!parsed || typeof parsed !== "object" || Array.isArray(parsed)) throw new Error("invalid_json");
+  return parsed;
 }
 
 function clean(value, max) {
@@ -215,6 +224,7 @@ export default {
         return json({ ok: true }, 201, origin);
       } catch (error) {
         if (error.message === "too_large") return json({ error: "Request too large." }, 413, origin);
+        if (error.message === "invalid_content_type") return json({ error: "Content-Type must be application/json." }, 415, origin);
         if (error.message === "invalid_json") return json({ error: "Invalid request." }, 400, origin);
         console.error("Lead intake failed:", error?.message || "unknown error");
         return json({ error: "Lead could not be saved." }, 503, origin);
@@ -223,6 +233,11 @@ export default {
 
     if (url.pathname === "/health") return json({ ok: true, service: "projectbaluga-lead-manager" }, 200, origin);
 
+    // Admin UI and API must only be served on the protected custom domain.
+    // Keep /api/intake available on workers.dev for the public website integration.
+    if (url.hostname !== "admin.wiltek.cloud") {
+      return new Response("Not found", { status: 404, headers: { "Cache-Control": "no-store" } });
+    }
     if (!await requireAdmin(request, env)) {
       return new Response("Unauthorized", { status: 401, headers: { "Cache-Control": "no-store" } });
     }

@@ -104,3 +104,28 @@ test("rejects non-POST requests to intake", async () => {
   }), env);
   assert.equal(response.status, 405);
 });
+
+test("rejects admin routes on the public workers.dev hostname", async () => {
+  const response = await worker.fetch(new Request("https://lead-manager.example.workers.dev/admin"), {});
+  assert.equal(response.status, 404);
+});
+
+test("rejects intake requests with a non-JSON content type", async () => {
+  const env = makeEnv();
+  const request = makeRequest(validLead, { "Content-Type": "text/plain" });
+  const response = await worker.fetch(request, env);
+  assert.equal(response.status, 415);
+  assert.equal(env.calls.inserted, null);
+});
+
+test("returns 400 for malformed JSON instead of a server error", async () => {
+  const env = makeEnv();
+  const request = new Request(endpoint, {
+    method: "POST",
+    headers: { Origin: origin, "Content-Type": "application/json", "CF-Connecting-IP": "203.0.113.9" },
+    body: "{not valid json"
+  });
+  const response = await worker.fetch(request, env);
+  assert.equal(response.status, 400);
+  assert.equal(env.calls.inserted, null);
+});

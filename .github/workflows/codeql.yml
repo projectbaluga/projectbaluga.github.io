@@ -33,8 +33,11 @@ jobs:
         with:
           node-version: 22
 
-      - name: Run Cloudflare Worker security tests
+      - name: Run existing Worker tests
         run: npm run test:worker
+
+      - name: Run Lead Manager tests
+        run: node --test tests/lead-manager.test.js
 
       - name: Initialize CodeQL
         uses: github/codeql-action/init@v4
