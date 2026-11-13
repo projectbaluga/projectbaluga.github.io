@@ -5,7 +5,7 @@ compatibility_date = "2026-11-10"
 [[d1_databases]]
 binding = "LEADS_DB"
 database_name = "projectbaluga-leads"
-database_id = "REPLACE_WITH_D1_DATABASE_ID"
+database_id = "e216ff5d-ffbe-4101-8a3b-690baf9096ad"
 
 [[ratelimits]]
 name = "LEAD_INTAKE_LIMITER"
