@@ -965,7 +965,7 @@
         .map((entry) => entry.content.trim())
         .filter(Boolean);
       const combined = visitorNotes.join(" ").replace(/\s+/g, " ").trim();
-      if (combined.length < 45) return false;
+      if (combined.length < 30) return false;
 
       const mentionsService = /\b(inventory|sales|pos|point of sale|website|web app|app|software|system|automation|automate|network|wi-?fi|router|mikrotik|server|database|backup|it support|computer|hardware|cloud|email|workflow|business process)\b/i.test(combined);
       const expressesNeed = /\b(need|needs|want|wants|looking for|planning|plan to|would like|help me|help us|build|create|develop|set up|setup|improve|fix|replace|automate|upgrade|having trouble|problem|issue)\b/i.test(combined);
