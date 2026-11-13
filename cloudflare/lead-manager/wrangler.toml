@@ -14,6 +14,5 @@ simple = { limit = 5, period = 60 }
 
 [vars]
 OWNER_EMAIL = "projectbaluga@gmail.com"
-# Set ACCESS_TEAM_DOMAIN and ACCESS_AUD as Worker secrets/vars in Cloudflare.
-# ACCESS_TEAM_DOMAIN = "your-team.cloudflareaccess.com"
-# ACCESS_AUD = "your-Cloudflare-Access-application-audience"
+ACCESS_TEAM_DOMAIN = "projectbaluga.cloudflareaccess.com"
+ACCESS_AUD = "9b35382647993e30b53043df37a9ec9e3007a82d30ec2c3c8ae9606551033c25"
