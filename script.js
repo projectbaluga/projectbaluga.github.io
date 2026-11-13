@@ -7,7 +7,7 @@
   // Optional Cloudflare Lead Manager intake endpoint. Leave blank until the Worker is deployed.
   // Set this to: https://<worker-subdomain>.workers.dev/api/intake
   // FormSubmit email delivery continues to work while this remains blank.
-  const LEAD_MANAGER_INTAKE_URL = "";
+  const LEAD_MANAGER_INTAKE_URL = "https://projectbaluga-lead-manager.projectbaluga.workers.dev/api/intake";
 
   const prefersReduced = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
   const finePointer = window.matchMedia("(pointer: fine)").matches;
