@@ -698,7 +698,7 @@
         }
 
         // The email delivery remains primary. Save to D1 only after FormSubmit confirms success.
-        const leadManagerUrl = window.PB_LEAD_MANAGER_INTAKE_URL || "";
+        const leadManagerUrl = LEAD_MANAGER_INTAKE_URL;
         let savedToLeadManager = false;
         if (leadManagerUrl) {
           try {
