@@ -31,7 +31,7 @@ This is a separate Worker so the existing AI assistant and its routes remain unc
 
 ## Deployment notes
 
-Before launch, replace the empty `LEAD_MANAGER_INTAKE_URL` constant near the top of the website's `script.js` with the deployed public Worker URL ending in `/api/intake`. Never put Access secrets or D1 credentials in website code. The Worker URL is not a secret.
+Before launch, replace the empty `LEAD_MANAGER_INTAKE_URL` constant near the top of the website's `script.js` with the deployed public Worker URL ending in `/api/intake`. The constant is declared in `script.js`, so the website does not throw a `ReferenceError` when the Worker has not yet been deployed. While it is blank, FormSubmit email delivery remains enabled and D1 saving is intentionally skipped. Never put Access secrets or D1 credentials in website code. The Worker URL is not a secret.
 
 The website's FormSubmit activation and email delivery should be tested separately. If FormSubmit succeeds but D1 is unavailable, the visitor is told the email was sent but the dashboard save failed; the form is not silently retried, avoiding duplicate emails.
 

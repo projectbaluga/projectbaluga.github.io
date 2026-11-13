@@ -4,6 +4,11 @@
 (function () {
   "use strict";
 
+  // Optional Cloudflare Lead Manager intake endpoint. Leave blank until the Worker is deployed.
+  // Set this to: https://<worker-subdomain>.workers.dev/api/intake
+  // FormSubmit email delivery continues to work while this remains blank.
+  const LEAD_MANAGER_INTAKE_URL = "";
+
   const prefersReduced = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
   const finePointer = window.matchMedia("(pointer: fine)").matches;
   const root = document.documentElement;
