@@ -957,8 +957,28 @@
       messagesEl.scrollTop = messagesEl.scrollHeight;
     }
 
+    // Show the inquiry handoff only after the visitor has shared actionable project context.
+    // This is a lightweight client-side gate, not an AI-generated assessment.
+    function hasEnoughInquiryContext() {
+      const visitorNotes = history
+        .filter((entry) => entry.role === "user")
+        .map((entry) => entry.content.trim())
+        .filter(Boolean);
+      const combined = visitorNotes.join(" ").replace(/\s+/g, " ").trim();
+      if (combined.length < 30) return false;
+
+      const mentionsService = /\b(inventory|sales|pos|point of sale|website|web app|app|software|system|automation|automate|network|wi-?fi|router|mikrotik|server|database|backup|it support|computer|hardware|cloud|email|workflow|business process|wifi setup|it services|technical support|kailangan|gusto|naghahanap|sistema|serbisyo)\b/i.test(combined);
+      const expressesNeed = /\b(need|needs|want|wants|looking for|planning|plan to|would like|help me|help us|build|create|develop|set up|setup|improve|fix|replace|automate|upgrade|having trouble|problem|issue|kailangan|gusto|naghahanap|magpagawa|gumawa|ipaayos|ayusin|mag-setup|i-setup|tulungan)\b/i.test(combined);
+      const givesContext = /\b(business|shop|store|office|company|team|staff|customer|currently|existing|manual|because|so that|for my|for our|budget|timeline|workflow|process|negosyo|tindahan|opisina|kumpanya|empleyado|problema|hirap|para sa akin|para sa amin)\b/i.test(combined);
+
+      // One detailed request is enough; otherwise require multiple messages with a clear need.
+      return (mentionsService && expressesNeed && (givesContext || combined.length >= 100)) ||
+        (visitorNotes.length >= 2 && mentionsService && combined.length >= 70 && (expressesNeed || givesContext));
+    }
+
     // Prepare a draft from visitor-written chat messages; never submit automatically.
     function addInquiryDraftAction(bubble) {
+      if (!hasEnoughInquiryContext() || bubble.querySelector(".pb-assistant__inquiry-action")) return;
       const action = document.createElement("button");
       action.type = "button";
       action.className = "btn btn--ghost btn--sm pb-assistant__inquiry-action";
@@ -1085,8 +1105,8 @@
         const answer = typeof payload.reply === "string" ? payload.reply.trim() : "";
         if (!answer) throw new Error("The assistant returned an empty response. Please try again.");
         renderAssistantResponse(pending, answer);
-        addInquiryDraftAction(pending);
         history.push({ role: "assistant", content: answer });
+        addInquiryDraftAction(pending);
         if (history.length > maxHistory) history.splice(0, history.length - maxHistory);
         setStatus("");
         setCharacterState("responding", "Responding…", {
